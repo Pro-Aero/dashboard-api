@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:15-bullseye
+    container_name: postgres
+    ports:
+      - '5432:5432'
+    restart: on-failure
+    environment:
+      - POSTGRES_PASSWORD=789523146
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=dashboard_db
+    networks:
+      - dashboard_network
+
+  backend:
+    container_name: backend
+    volumes:
+      - ./:/home/node/app
+    restart: on-failure
+    ports:
+      - '3000:3000'
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - dashboard_network
+
+networks:
+  dashboard_network:
+    driver: bridge
