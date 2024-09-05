@@ -14,11 +14,12 @@ datasource db {
 }
 
 model User {
-  id                String @id
-  displayName       String @map("display_name")
-  userPrincipalName String @map("user_principal_name")
-  mail              String
-  jobTitle          String @map("job_title")
+  id                String       @id
+  displayName       String       @map("display_name")
+  userPrincipalName String       @map("user_principal_name")
+  mail              String?
+  jobTitle          String?      @map("job_title")
+  assignments       Assignment[]
 
   @@map("users")
 }
@@ -26,19 +27,21 @@ model User {
 model Group {
   id          String    @id
   displayName String    @map("display_name")
-  description String
-  mail        String
+  description String?
+  mail        String?
   planners    Planner[]
 
   @@map("groups")
 }
 
 model Planner {
-  id      String @id
-  groupId String @map("group_id")
-  title   String
-  owner   String
-  tasks   Task[]
+  id         String   @id
+  groupId    String   @map("group_id")
+  title      String
+  owner      String
+  totalHours Float?   @map("total_hours")
+  tasks      Task[]
+  buckets    Bucket[]
 
   group Group @relation(fields: [groupId], references: [id])
 
@@ -46,13 +49,42 @@ model Planner {
 }
 
 model Task {
-  id              String @id
-  planId          String @map("plan_id")
-  title           String
-  percentComplete Int    @map("percent_complete")
-  priority        Int
+  id                String       @id
+  plannerId         String       @map("planner_id")
+  bucketId          String       @map("bucket_id")
+  title             String
+  percentComplete   Int          @map("percent_complete")
+  priority          Int
+  startDateTime     DateTime?    @map("start_date_time")
+  dueDateTime       DateTime?    @map("due_date_time")
+  completedDateTime DateTime?    @map("completed_date_time")
+  hours             Float?
+  assignments       Assignment[]
 
-  planner Planner @relation(fields: [planId], references: [id])
+  planner Planner @relation(fields: [plannerId], references: [id])
+  bucket  Bucket  @relation(fields: [bucketId], references: [id])
 
   @@map("tasks")
+}
+
+model Assignment {
+  id     String @id
+  taskId String @map("task_id")
+  userId String @map("user_id")
+
+  task Task @relation(fields: [taskId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("assignments")
+}
+
+model Bucket {
+  id        String @id
+  plannerId String @map("plan_id")
+  name      String
+  tasks      Task[]
+
+  planner Planner @relation(fields: [plannerId], references: [id])
+
+  @@map("buckets")
 }

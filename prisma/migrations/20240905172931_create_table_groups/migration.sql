@@ -2,8 +2,8 @@
 CREATE TABLE "groups" (
     "id" TEXT NOT NULL,
     "display_name" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "mail" TEXT NOT NULL,
+    "description" TEXT,
+    "mail" TEXT,
 
     CONSTRAINT "groups_pkey" PRIMARY KEY ("id")
 );

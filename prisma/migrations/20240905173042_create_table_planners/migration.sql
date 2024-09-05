@@ -4,6 +4,7 @@ CREATE TABLE "planners" (
     "group_id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "owner" TEXT NOT NULL,
+    "total_hours" DOUBLE PRECISION,
 
     CONSTRAINT "planners_pkey" PRIMARY KEY ("id")
 );
