@@ -12,3 +12,47 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                String @id
+  displayName       String @map("display_name")
+  userPrincipalName String @map("user_principal_name")
+  mail              String
+  jobTitle          String @map("job_title")
+
+  @@map("users")
+}
+
+model Group {
+  id          String    @id
+  displayName String    @map("display_name")
+  description String
+  mail        String
+  planners    Planner[]
+
+  @@map("groups")
+}
+
+model Planner {
+  id      String @id
+  groupId String @map("group_id")
+  title   String
+  owner   String
+  tasks   Task[]
+
+  group Group @relation(fields: [groupId], references: [id])
+
+  @@map("planners")
+}
+
+model Task {
+  id              String @id
+  planId          String @map("plan_id")
+  title           String
+  percentComplete Int    @map("percent_complete")
+  priority        Int
+
+  planner Planner @relation(fields: [planId], references: [id])
+
+  @@map("tasks")
+}
