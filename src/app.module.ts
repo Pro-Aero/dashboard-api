@@ -5,6 +5,7 @@ import { GroupsModule } from './modules/groups/groups.module';
 import { PlannersModule } from './modules/planners/planners.module';
 import { SyncModule } from './modules/sync/sync.module';
 import { UsersModule } from './modules/users/users.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UsersModule } from './modules/users/users.module';
     UsersModule,
     GroupsModule,
     PlannersModule,
+    TasksModule,
   ],
   controllers: [],
   providers: [],

@@ -10,6 +10,10 @@ export class PlannersService {
     return await this.repository.upsert(planner);
   }
 
+  async getAll(): Promise<PlannerEntity[]> {
+    return await this.repository.getAll();
+  }
+
   async removeOutdated(apiPlanners: PlannerEntity[]): Promise<void> {
     const dbPlanners = await this.repository.getAll();
 
