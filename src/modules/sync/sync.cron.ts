@@ -5,8 +5,8 @@ import { SyncPlannersService } from './services/sync-planners.service';
 import { SyncUsersService } from './services/sync-users.service';
 
 @Injectable()
-export class PlannerSyncCron {
-  private readonly logger = new Logger(PlannerSyncCron.name);
+export class SyncCron {
+  private readonly logger = new Logger(SyncCron.name);
 
   constructor(
     private readonly syncUsersService: SyncUsersService,
@@ -18,9 +18,9 @@ export class PlannerSyncCron {
   async handle() {
     this.logger.log('Sync start');
 
-    await this.syncUsersService.sync();
-    await this.syncGroupsService.sync();
-    await this.syncPlannersService.sync();
+    // await this.syncUsersService.sync();
+    // await this.syncGroupsService.sync();
+    // await this.syncPlannersService.sync();
 
     this.logger.log('Sync finished');
   }
