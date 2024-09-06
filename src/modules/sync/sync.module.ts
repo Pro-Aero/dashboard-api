@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
+import { BucketsModule } from '../buckets/buckets.module.js';
 import { GroupsModule } from '../groups/groups.module.js';
 import { PlannersModule } from '../planners/planners.module.js';
 import { TasksModule } from '../tasks/tasks.module.js';
 import { UsersModule } from '../users/users.module.js';
 import { GraphClientService } from './services/graph-client.service.js';
+import { SyncBucketsService } from './services/sync-buckets.service.js';
 import { SyncGroupsService } from './services/sync-groups.service.js';
 import { SyncPlannersService } from './services/sync-planners.service.js';
 import { SyncTasksService } from './services/sync-tasks.service.js';
@@ -17,6 +19,7 @@ import { SyncCron } from './sync.cron.js';
     UsersModule,
     GroupsModule,
     PlannersModule,
+    BucketsModule,
     TasksModule,
   ],
   providers: [
@@ -25,6 +28,7 @@ import { SyncCron } from './sync.cron.js';
     SyncUsersService,
     SyncGroupsService,
     SyncPlannersService,
+    SyncBucketsService,
     SyncTasksService,
   ],
 })

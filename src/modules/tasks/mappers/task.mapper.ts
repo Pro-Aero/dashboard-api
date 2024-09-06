@@ -1,6 +1,6 @@
 import { Prisma, Task } from '@prisma/client';
 import { TaskDto } from '../models/task.dto';
-import { TaskEntity } from '../models/task.entity';
+import { TaskApiResponse, TaskEntity } from '../models/task.entity';
 
 export class TasksMapper {
   static modelToEntity(raw: Task): TaskEntity {
@@ -47,6 +47,20 @@ export class TasksMapper {
       dueDateTime: entity.dueDateTime,
       completedDateTime: entity.completedDateTime,
       hours: entity.hours,
+    };
+  }
+
+  static apiToEntity(response: TaskApiResponse): TaskEntity {
+    return {
+      id: response.id,
+      plannerId: response.planId,
+      bucketId: response.bucketId,
+      title: response.title,
+      percentComplete: response.percentComplete,
+      priority: response.priority,
+      startDateTime: response.startDateTime,
+      dueDateTime: response.dueDateTime,
+      completedDateTime: response.completedDateTime,
     };
   }
 }

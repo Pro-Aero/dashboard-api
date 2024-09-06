@@ -13,13 +13,12 @@ export type TaskEntity = {
 
 export type TaskApiResponse = {
   id: string;
-  plannerId: string;
+  planId: string;
   bucketId: string;
   title: string;
   percentComplete: number;
   priority: number;
-  startDateTime?: Date;
-  dueDateTime?: Date;
-  completedDateTime?: Date;
-  hours?: number;
+  startDateTime: Date;
+  dueDateTime: Date;
+  completedDateTime: Date;
 };

@@ -1,6 +1,7 @@
 import { Client } from '@microsoft/microsoft-graph-client';
 import { Injectable } from '@nestjs/common';
 import { PlannersService } from 'src/modules/planners/planners.service';
+import { TasksMapper } from 'src/modules/tasks/mappers/task.mapper';
 import {
   TaskApiResponse,
   TaskEntity,
@@ -49,6 +50,6 @@ export class SyncTasksService {
       )
       .get();
 
-    return value;
+    return value.map(TasksMapper.apiToEntity);
   }
 }

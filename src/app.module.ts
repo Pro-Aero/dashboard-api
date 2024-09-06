@@ -6,6 +6,7 @@ import { PlannersModule } from './modules/planners/planners.module';
 import { SyncModule } from './modules/sync/sync.module';
 import { UsersModule } from './modules/users/users.module';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { BucketsModule } from './modules/buckets/buckets.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
     GroupsModule,
     PlannersModule,
     TasksModule,
+    BucketsModule,
   ],
   controllers: [],
   providers: [],
