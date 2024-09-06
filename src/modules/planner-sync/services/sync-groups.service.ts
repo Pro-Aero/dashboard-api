@@ -26,7 +26,7 @@ export class SyncGroupsService {
       groups.map(async (user) => await this.groupsService.upsert(user)),
     );
 
-    await this.groupsService.removeOutdatedGroups(groups);
+    await this.groupsService.removeOutdated(groups);
   }
 
   async getGroups(): Promise<GroupEntity[]> {

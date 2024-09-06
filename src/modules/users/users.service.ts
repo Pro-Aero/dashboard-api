@@ -10,7 +10,7 @@ export class UsersService {
     return await this.repository.upsert(user);
   }
 
-  async removeOutdatedUsers(apiUsers: UserEntity[]): Promise<void> {
+  async removeOutdated(apiUsers: UserEntity[]): Promise<void> {
     const dbUsers = await this.repository.getAll();
 
     const apiUsersMap = new Map(apiUsers.map((user) => [user.id, user]));

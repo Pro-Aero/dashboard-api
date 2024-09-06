@@ -26,7 +26,7 @@ export class SyncUsersService {
       users.map(async (user) => await this.usersService.upsert(user)),
     );
 
-    await this.usersService.removeOutdatedUsers(users);
+    await this.usersService.removeOutdated(users);
   }
 
   async getUsers(): Promise<UserEntity[]> {

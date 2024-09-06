@@ -10,7 +10,11 @@ export class GroupsService {
     return await this.repository.upsert(group);
   }
 
-  async removeOutdatedGroups(apiGroups: GroupEntity[]): Promise<void> {
+  async getAll(): Promise<GroupEntity[]> {
+    return await this.repository.getAll();
+  }
+
+  async removeOutdated(apiGroups: GroupEntity[]): Promise<void> {
     const dbGroups = await this.repository.getAll();
 
     const apiGroupsMap = new Map(apiGroups.map((group) => [group.id, group]));

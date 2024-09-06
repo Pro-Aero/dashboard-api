@@ -4,6 +4,7 @@ import { EnvModule } from './modules/env/env.module';
 import { PlannerSyncModule } from './modules/planner-sync/planner-sync.module';
 import { UsersModule } from './modules/users/users.module';
 import { GroupsModule } from './modules/groups/groups.module';
+import { PlannersModule } from './modules/planners/planners.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { GroupsModule } from './modules/groups/groups.module';
     EnvModule,
     UsersModule,
     GroupsModule,
+    PlannersModule,
   ],
   controllers: [],
   providers: [],
