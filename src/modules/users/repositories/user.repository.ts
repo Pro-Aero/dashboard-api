@@ -1,5 +1,6 @@
 import { prisma } from 'src/config/prisma-client';
 import { UsersMapper } from '../mappers/user.mapper';
+import { UserFilter } from '../models/user.dto';
 import { UserEntity } from '../models/user.entity';
 
 export class UserRepository {
@@ -15,8 +16,18 @@ export class UserRepository {
     return UsersMapper.modelToEntity(userModel);
   }
 
-  async getAll(): Promise<UserEntity[]> {
-    const users = await prisma.user.findMany();
+  async findAll(filter?: UserFilter): Promise<UserEntity[]> {
+    const users = await prisma.user.findMany({
+      where: {
+        displayName: filter?.displayName
+          ? { contains: filter.displayName, mode: 'insensitive' }
+          : undefined,
+        mail: filter?.mail
+          ? { contains: filter.mail, mode: 'insensitive' }
+          : undefined,
+      },
+    });
+
     return users.map(UsersMapper.modelToEntity);
   }
 
