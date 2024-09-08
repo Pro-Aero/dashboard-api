@@ -1,7 +1,6 @@
 import { Prisma, Task } from '@prisma/client';
 import { TaskDto } from '../models/task.dto';
 import { TaskApiResponse, TaskEntity } from '../models/task.entity';
-
 export class TasksMapper {
   static modelToEntity(raw: Task): TaskEntity {
     const entity: TaskEntity = {

@@ -26,7 +26,7 @@ export class SyncBucketsService {
   }
 
   async sync() {
-    const planners = await this.plannersService.getAll();
+    const planners = await this.plannersService.findAll();
 
     const bucketsArray = await Promise.all(
       planners.map(async (planner) => this.getBuckets(planner.id)),
