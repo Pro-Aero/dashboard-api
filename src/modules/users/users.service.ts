@@ -20,4 +20,9 @@ export class UsersService {
       usersToRemove.map(async (user) => await this.repository.remove(user.id)),
     );
   }
+
+  async exists(userId: string): Promise<boolean> {
+    const user = await this.repository.findById(userId);
+    return !!user;
+  }
 }

@@ -20,6 +20,18 @@ export class UserRepository {
     return users.map(UsersMapper.modelToEntity);
   }
 
+  async findById(userId: string): Promise<UserEntity> {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) return null;
+
+    return UsersMapper.modelToEntity(user);
+  }
+
   async remove(userId: string): Promise<void> {
     await prisma.user.delete({ where: { id: userId } });
   }

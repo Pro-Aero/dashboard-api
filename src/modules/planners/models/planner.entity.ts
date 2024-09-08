@@ -13,7 +13,7 @@ export type PlannerApiResponse = {
   container: Container;
 };
 
-export type Container = {
+type Container = {
   containerId: string;
   type: string;
   url: string;

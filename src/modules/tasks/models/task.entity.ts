@@ -9,6 +9,7 @@ export type TaskEntity = {
   dueDateTime?: Date;
   completedDateTime?: Date;
   hours?: number;
+  assignments?: string[];
 };
 
 export type TaskApiResponse = {
@@ -21,4 +22,9 @@ export type TaskApiResponse = {
   startDateTime: Date;
   dueDateTime: Date;
   completedDateTime: Date;
+  assignments?: Assignments;
+};
+
+type Assignments = {
+  [key: string]: unknown;
 };

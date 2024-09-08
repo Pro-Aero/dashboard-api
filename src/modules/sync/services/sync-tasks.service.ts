@@ -1,5 +1,6 @@
 import { Client } from '@microsoft/microsoft-graph-client';
 import { Injectable } from '@nestjs/common';
+import { AssignmentsService } from 'src/modules/assignments/assignments.service';
 import { PlannersService } from 'src/modules/planners/planners.service';
 import { TasksMapper } from 'src/modules/tasks/mappers/task.mapper';
 import {
@@ -21,6 +22,7 @@ export class SyncTasksService {
     private readonly graphClientService: GraphClientService,
     private readonly plannersService: PlannersService,
     private readonly tasksService: TasksService,
+    private readonly assignmentsService: AssignmentsService,
   ) {
     this.client = this.graphClientService.getClient();
   }
@@ -40,13 +42,26 @@ export class SyncTasksService {
     );
 
     await this.tasksService.removeOutdated(allTasks);
+
+    await Promise.all(
+      allTasks.map((task) =>
+        Promise.all(
+          task.assignments.map((assignment) =>
+            this.assignmentsService.upsert({
+              taskId: task.id,
+              userId: assignment,
+            }),
+          ),
+        ),
+      ),
+    );
   }
 
   async getTasks(plannerId: string): Promise<TaskEntity[]> {
     const { value }: TaskResponse = await this.client
       .api(`/planner/plans/${plannerId}/tasks`)
       .select(
-        'id,planId,bucketId,title,percentComplete,priority,startDateTime,dueDateTime,completedDateTime',
+        'id,planId,bucketId,title,percentComplete,priority,startDateTime,dueDateTime,completedDateTime,assignments',
       )
       .get();
 

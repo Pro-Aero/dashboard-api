@@ -61,6 +61,7 @@ export class TasksMapper {
       startDateTime: response.startDateTime,
       dueDateTime: response.dueDateTime,
       completedDateTime: response.completedDateTime,
+      assignments: Object.keys(response.assignments),
     };
   }
 }

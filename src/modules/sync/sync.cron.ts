@@ -22,11 +22,11 @@ export class SyncCron {
   async handle() {
     this.logger.log('Sync start');
 
-    await this.syncUsersService.sync();
-    await this.syncGroupsService.sync();
-    await this.syncPlannersService.sync();
-    await this.syncBucketsService.sync();
-    await this.syncTasksService.sync();
+    // await this.syncUsersService.sync();
+    // await this.syncGroupsService.sync();
+    // await this.syncPlannersService.sync();
+    // await this.syncBucketsService.sync();
+    // await this.syncTasksService.sync();
 
     this.logger.log('Sync finished');
   }

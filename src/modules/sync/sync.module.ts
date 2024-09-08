@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AssignmentsModule } from '../assignments/assignments.module.js';
 import { BucketsModule } from '../buckets/buckets.module.js';
 import { GroupsModule } from '../groups/groups.module.js';
 import { PlannersModule } from '../planners/planners.module.js';
@@ -21,6 +22,7 @@ import { SyncCron } from './sync.cron.js';
     PlannersModule,
     BucketsModule,
     TasksModule,
+    AssignmentsModule,
   ],
   providers: [
     SyncCron,

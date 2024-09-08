@@ -9,4 +9,5 @@ export type TaskDto = {
   dueDateTime?: Date;
   completedDateTime?: Date;
   hours?: number;
+  assignments?: string[];
 };

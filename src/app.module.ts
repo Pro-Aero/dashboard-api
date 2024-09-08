@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { AssignmentsModule } from './modules/assignments/assignments.module';
+import { BucketsModule } from './modules/buckets/buckets.module';
 import { EnvModule } from './modules/env/env.module';
 import { GroupsModule } from './modules/groups/groups.module';
 import { PlannersModule } from './modules/planners/planners.module';
 import { SyncModule } from './modules/sync/sync.module';
-import { UsersModule } from './modules/users/users.module';
 import { TasksModule } from './modules/tasks/tasks.module';
-import { BucketsModule } from './modules/buckets/buckets.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { BucketsModule } from './modules/buckets/buckets.module';
     PlannersModule,
     TasksModule,
     BucketsModule,
+    AssignmentsModule,
   ],
   controllers: [],
   providers: [],
