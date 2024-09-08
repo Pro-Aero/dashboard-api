@@ -26,7 +26,7 @@ export class GroupsController {
 
   @Get(':groupId/planners')
   @HttpCode(HttpStatus.OK)
-  async findByGroupId(
+  async findAllByGroupId(
     @Param('groupId') groupId: string,
     @Query() filter: PlannerFilter,
   ) {

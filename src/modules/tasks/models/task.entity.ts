@@ -9,8 +9,15 @@ export type TaskEntity = {
   dueDateTime?: Date;
   completedDateTime?: Date;
   hours?: number;
+  status?: TaskStatus;
   assignments?: string[];
 };
+
+export enum TaskStatus {
+  NotStarted = 'NotStarted',
+  InProgress = 'InProgress',
+  Completed = 'Completed',
+}
 
 export type TaskApiResponse = {
   id: string;
