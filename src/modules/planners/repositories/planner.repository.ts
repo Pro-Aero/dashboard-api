@@ -1,8 +1,49 @@
 import { prisma } from 'src/config/prisma-client';
 import { PlannersMapper } from '../mappers/planner.mapper';
+import { PlannerFilter } from '../models/planner.dto';
 import { PlannerEntity } from '../models/planner.entity';
 
 export class PlannerRepository {
+  async findAll(filter?: PlannerFilter): Promise<PlannerEntity[]> {
+    const planners = await prisma.planner.findMany({
+      where: {
+        title: filter?.title
+          ? { contains: filter.title, mode: 'insensitive' }
+          : undefined,
+      },
+    });
+
+    return planners.map(PlannersMapper.modelToEntity);
+  }
+
+  async findAllByGroupId(
+    groupId: string,
+    filter?: PlannerFilter,
+  ): Promise<PlannerEntity[]> {
+    const planners = await prisma.planner.findMany({
+      where: {
+        groupId,
+        title: filter?.title
+          ? { contains: filter.title, mode: 'insensitive' }
+          : undefined,
+      },
+    });
+
+    return planners.map(PlannersMapper.modelToEntity);
+  }
+
+  async findById(plannerId: string): Promise<PlannerEntity> {
+    const planner = await prisma.planner.findUnique({
+      where: {
+        id: plannerId,
+      },
+    });
+
+    if (!planner) return null;
+
+    return PlannersMapper.modelToEntity(planner);
+  }
+
   async upsert(user: PlannerEntity): Promise<PlannerEntity> {
     const data = PlannersMapper.entityToModel(user);
 
@@ -13,11 +54,6 @@ export class PlannerRepository {
     });
 
     return PlannersMapper.modelToEntity(userModel);
-  }
-
-  async getAll(): Promise<PlannerEntity[]> {
-    const planners = await prisma.planner.findMany();
-    return planners.map(PlannersMapper.modelToEntity);
   }
 
   async remove(userId: string): Promise<void> {
