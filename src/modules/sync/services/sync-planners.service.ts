@@ -26,7 +26,7 @@ export class SyncPlannersService {
   }
 
   async sync() {
-    const groups = await this.groupsService.getAll();
+    const groups = await this.groupsService.findAll();
 
     const plannersArray = await Promise.all(
       groups.map(async (group) => this.getPlanners(group.id)),
