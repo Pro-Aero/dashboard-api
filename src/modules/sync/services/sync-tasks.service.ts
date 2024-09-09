@@ -38,13 +38,10 @@ export class SyncTasksService {
     tasksArray.forEach((tasks) => allTasks.push(...tasks));
 
     await Promise.all(
-      allTasks.map(async (task) => await this.tasksService.upsert(task)),
-    );
+      allTasks.map(async (task) => {
+        task.hours = this.tasksService.extractHoursFromTitle(task.title);
+        await this.tasksService.upsert(task);
 
-    await this.tasksService.removeOutdated(allTasks);
-
-    await Promise.all(
-      allTasks.map((task) =>
         Promise.all(
           task.assignments.map((assignment) =>
             this.assignmentsService.upsert({
@@ -52,7 +49,16 @@ export class SyncTasksService {
               userId: assignment,
             }),
           ),
-        ),
+        );
+      }),
+    );
+
+    await this.tasksService.removeOutdated(allTasks);
+
+    Promise.all(
+      planners.map(
+        async (planner) =>
+          await this.plannersService.calculateTotalHours(planner),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { TasksService } from '../tasks/tasks.service';
 import { PlannersMapper } from './mappers/planner.mapper';
 import { PlannerDto, PlannerFilter } from './models/planner.dto';
 import { PlannerEntity } from './models/planner.entity';
@@ -6,7 +7,10 @@ import { PlannerRepository } from './repositories/planner.repository';
 
 @Injectable()
 export class PlannersService {
-  constructor(private readonly repository: PlannerRepository) {}
+  constructor(
+    private readonly repository: PlannerRepository,
+    private readonly tasksService: TasksService,
+  ) {}
 
   async findAll(filter?: PlannerFilter): Promise<PlannerDto[]> {
     const planners = await this.repository.findAll(filter);
@@ -46,5 +50,19 @@ export class PlannersService {
         async (planner) => await this.repository.remove(planner.id),
       ),
     );
+  }
+
+  async calculateTotalHours(planner: PlannerEntity): Promise<PlannerEntity> {
+    const tasks = await this.tasksService.findAllByPlannerId(planner.id);
+
+    const totalHours = tasks.reduce(
+      (acc, task) => acc + (task.hours ? task.hours : 0),
+      0,
+    );
+
+    planner.totalHours = totalHours;
+    await this.repository.update(planner.id, planner);
+
+    return planner;
   }
 }

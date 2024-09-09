@@ -56,6 +56,20 @@ export class PlannerRepository {
     return PlannersMapper.modelToEntity(userModel);
   }
 
+  async update(
+    plannerId: string,
+    planner: Partial<PlannerEntity>,
+  ): Promise<PlannerEntity> {
+    const updatedPlanner = await prisma.planner.update({
+      where: { id: plannerId },
+      data: {
+        totalHours: planner.totalHours,
+      },
+    });
+
+    return PlannersMapper.modelToEntity(updatedPlanner);
+  }
+
   async remove(userId: string): Promise<void> {
     await prisma.planner.delete({ where: { id: userId } });
   }
