@@ -9,7 +9,6 @@ export class TaskRepository {
     return tasks.map(TasksMapper.modelToEntity);
   }
 
-  // TODO: Finish filter all fields
   async findAllByPlannerId(
     plannerId: string,
     filter?: TaskFilter,
@@ -40,6 +39,18 @@ export class TaskRepository {
     if (!task) return null;
 
     return TasksMapper.modelToEntity(task);
+  }
+
+  async findMostPriority(): Promise<TaskEntity[]> {
+    const tasks = await prisma.task.findMany({
+      where: {
+        completedDateTime: null,
+        NOT: { dueDateTime: null, percentComplete: 100 },
+      },
+      orderBy: [{ dueDateTime: 'asc' }, { priority: 'desc' }],
+    });
+
+    return tasks.map(TasksMapper.modelToEntity);
   }
 
   async upsert(task: TaskEntity): Promise<TaskEntity> {
