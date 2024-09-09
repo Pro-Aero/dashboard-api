@@ -13,7 +13,7 @@ import { SyncPlannersService } from './services/sync-planners.service.js';
 import { SyncTasksService } from './services/sync-tasks.service.js';
 import { SyncUsersService } from './services/sync-users.service.js';
 import { SyncCron } from './sync.cron.js';
-import { SyncController } from './sync.repository.js';
+import { SyncController } from './sync.controller.js';
 
 @Module({
   imports: [
