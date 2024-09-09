@@ -40,4 +40,13 @@ export class TasksService {
       tasksToRemove.map(async (task) => await this.repository.remove(task.id)),
     );
   }
+
+  extractHoursFromTitle(title: string): number {
+    const parts = title.split('-');
+    const lastPart = parts[parts.length - 1].trim();
+
+    const hour = Number(lastPart);
+
+    return isNaN(hour) ? null : hour;
+  }
 }
