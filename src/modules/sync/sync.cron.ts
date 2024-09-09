@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { SyncBucketsService } from './services/sync-buckets.service';
 import { SyncGroupsService } from './services/sync-groups.service';
 import { SyncPlannersService } from './services/sync-planners.service';
@@ -18,15 +18,20 @@ export class SyncCron {
     private readonly syncTasksService: SyncTasksService,
   ) {}
 
-  @Cron(CronExpression.EVERY_30_SECONDS, { name: 'sync' })
+  @Cron('0 */10 7-19 * * 1-5', { name: 'sync' })
   async handle() {
     this.logger.log('Sync start');
 
-    await this.syncUsersService.sync();
-    await this.syncGroupsService.sync();
-    await this.syncPlannersService.sync();
-    await this.syncBucketsService.sync();
-    await this.syncTasksService.sync();
+    try {
+      await this.syncUsersService.sync();
+      await this.syncGroupsService.sync();
+      await this.syncPlannersService.sync();
+      await this.syncBucketsService.sync();
+      await this.syncTasksService.sync();
+    } catch (error) {
+      this.logger.error('Sync failed');
+      this.logger.error(error);
+    }
 
     this.logger.log('Sync finished');
   }
