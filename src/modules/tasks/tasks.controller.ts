@@ -5,6 +5,12 @@ import { TasksService } from './tasks.service';
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
+  @Get('priority')
+  @HttpCode(HttpStatus.OK)
+  async findAll() {
+    return await this.tasksService.mostPriority();
+  }
+
   @Get(':taskId')
   @HttpCode(HttpStatus.OK)
   async findById(@Param('taskId') taskId: string) {

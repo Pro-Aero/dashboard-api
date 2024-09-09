@@ -1,6 +1,6 @@
 import { Prisma, Task } from '@prisma/client';
 import { TaskDto } from '../models/task.dto';
-import { TaskApiResponse, TaskEntity } from '../models/task.entity';
+import { TaskApiResponse, TaskEntity, TaskStatus } from '../models/task.entity';
 export class TasksMapper {
   static modelToEntity(raw: Task): TaskEntity {
     const entity: TaskEntity = {
@@ -14,6 +14,11 @@ export class TasksMapper {
       dueDateTime: raw.dueDateTime,
       completedDateTime: raw.completedDateTime,
       hours: raw.hours,
+      status: TasksMapper.toStatus(
+        raw.startDateTime,
+        raw.dueDateTime,
+        raw.completedDateTime,
+      ),
     };
 
     return entity;
@@ -46,6 +51,7 @@ export class TasksMapper {
       dueDateTime: entity.dueDateTime,
       completedDateTime: entity.completedDateTime,
       hours: entity.hours,
+      status: entity.status,
     };
   }
 
@@ -62,5 +68,29 @@ export class TasksMapper {
       completedDateTime: response.completedDateTime,
       assignments: Object.keys(response.assignments),
     };
+  }
+
+  static toStatus(
+    startDateTime?: Date,
+    dueDateTime?: Date,
+    completedDateTime?: Date,
+  ): TaskStatus {
+    if (completedDateTime) {
+      return TaskStatus.Completed;
+    }
+
+    if (startDateTime && new Date() <= startDateTime) {
+      return TaskStatus.NotStarted;
+    }
+
+    if (dueDateTime && new Date() <= dueDateTime) {
+      return TaskStatus.InProgress;
+    }
+
+    if (dueDateTime && new Date() > dueDateTime) {
+      return TaskStatus.Overdue;
+    }
+
+    return null;
   }
 }

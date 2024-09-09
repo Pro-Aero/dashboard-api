@@ -9,7 +9,13 @@ export class TasksService {
   constructor(private readonly repository: TaskRepository) {}
 
   async findAll(): Promise<TaskEntity[]> {
-    return await this.repository.findAll();
+    const tasks = await this.repository.findAll();
+    return tasks.map(TasksMapper.entityToDTO);
+  }
+
+  async mostPriority(): Promise<TaskEntity[]> {
+    const tasks = await this.repository.findMostPriority();
+    return tasks.map(TasksMapper.entityToDTO);
   }
 
   async findAllByPlannerId(

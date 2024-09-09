@@ -17,6 +17,7 @@ export enum TaskStatus {
   NotStarted = 'NotStarted',
   InProgress = 'InProgress',
   Completed = 'Completed',
+  Overdue = 'Overdue',
 }
 
 export type TaskApiResponse = {
