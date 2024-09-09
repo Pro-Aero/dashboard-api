@@ -8,6 +8,7 @@ import { PlannersModule } from './modules/planners/planners.module';
 import { SyncModule } from './modules/sync/sync.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { UsersModule } from './modules/users/users.module';
     TasksModule,
     BucketsModule,
     AssignmentsModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
