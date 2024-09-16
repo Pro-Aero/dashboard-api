@@ -6,6 +6,7 @@ import { TasksMapper } from 'src/modules/tasks/mappers/task.mapper';
 import {
   TaskApiResponse,
   TaskEntity,
+  UserAssignment,
 } from 'src/modules/tasks/models/task.entity';
 import { TasksService } from 'src/modules/tasks/tasks.service';
 import { GraphClientService } from './graph-client.service';
@@ -42,11 +43,13 @@ export class SyncTasksService {
         task.hours = this.tasksService.extractHoursFromTitle(task.title);
         await this.tasksService.upsert(task);
 
+        const assignments = this.removeDuplicates(task.assignments);
+
         Promise.all(
-          task.assignments.map((assignment) =>
+          assignments.map((user) =>
             this.assignmentsService.upsert({
               taskId: task.id,
-              userId: assignment,
+              userId: user.id,
             }),
           ),
         );
@@ -72,5 +75,16 @@ export class SyncTasksService {
       .get();
 
     return value.map(TasksMapper.apiToEntity);
+  }
+
+  removeDuplicates(assignments: UserAssignment[]): UserAssignment[] {
+    const uniqueIds = new Set();
+    return assignments.filter((assignment) => {
+      if (uniqueIds.has(assignment.id)) {
+        return false;
+      }
+      uniqueIds.add(assignment.id);
+      return true;
+    });
   }
 }

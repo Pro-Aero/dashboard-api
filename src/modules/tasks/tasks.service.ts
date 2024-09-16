@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { PaginatedItems } from 'src/types/pagination-query';
 import { TasksMapper } from './mappers/task.mapper';
 import { TaskDto, TaskFilter } from './models/task.dto';
 import { TaskEntity } from './models/task.entity';
@@ -13,7 +14,7 @@ export class TasksService {
     return tasks.map(TasksMapper.entityToDTO);
   }
 
-  async mostPriority(): Promise<TaskEntity[]> {
+  async findMostPriority(): Promise<TaskEntity[]> {
     const tasks = await this.repository.findMostPriority();
     return tasks.map(TasksMapper.entityToDTO);
   }
@@ -26,14 +27,30 @@ export class TasksService {
     return tasks.map(TasksMapper.entityToDTO);
   }
 
+  async findAllWithPagination(
+    page: number,
+    itemsPerPage: number,
+    filter?: TaskFilter,
+  ): Promise<PaginatedItems<TaskDto>> {
+    const tasks = await this.repository.findAllWithPagination(
+      page,
+      itemsPerPage,
+      filter,
+    );
+
+    tasks.data = tasks.data.map(TasksMapper.entityToDTO);
+
+    return tasks;
+  }
+
   async findById(taskId: string): Promise<TaskDto> {
     const task = await this.repository.findById(taskId);
     if (!task) throw new NotFoundException();
     return TasksMapper.entityToDTO(task);
   }
 
-  async upsert(task: TaskEntity): Promise<TaskEntity> {
-    return await this.repository.upsert(task);
+  async upsert(task: TaskEntity): Promise<void> {
+    await this.repository.upsert(task);
   }
 
   async removeOutdated(apiTasks: TaskEntity[]): Promise<void> {

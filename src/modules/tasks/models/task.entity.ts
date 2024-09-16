@@ -1,6 +1,6 @@
 export type TaskEntity = {
   id: string;
-  plannerId: string;
+  plannerId?: string;
   bucketId: string;
   title: string;
   percentComplete: number;
@@ -10,7 +10,18 @@ export type TaskEntity = {
   completedDateTime?: Date;
   hours?: number;
   status?: TaskStatus;
-  assignments?: string[];
+  planner?: PlannerInTask;
+  assignments?: UserAssignment[];
+};
+
+export type PlannerInTask = {
+  id: string;
+  title?: string;
+};
+
+export type UserAssignment = {
+  id: string;
+  name?: string;
 };
 
 export enum TaskStatus {

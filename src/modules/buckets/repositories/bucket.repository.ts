@@ -3,16 +3,14 @@ import { BucketsMapper } from '../mappers/bucket.mapper';
 import { BucketEntity } from '../models/bucket.entity';
 
 export class BucketRepository {
-  async upsert(user: BucketEntity): Promise<BucketEntity> {
+  async upsert(user: BucketEntity): Promise<void> {
     const data = BucketsMapper.entityToModel(user);
 
-    const userModel = await prisma.bucket.upsert({
+    await prisma.bucket.upsert({
       where: { id: data.id },
       create: data,
       update: data,
     });
-
-    return BucketsMapper.modelToEntity(userModel);
   }
 
   async getAll(): Promise<BucketEntity[]> {

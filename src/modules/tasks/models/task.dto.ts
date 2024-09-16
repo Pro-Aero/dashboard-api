@@ -5,11 +5,11 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { TaskStatus } from './task.entity';
+import { PaginationQuery } from 'src/types/pagination-query';
+import { PlannerInTask, TaskStatus, UserAssignment } from './task.entity';
 
 export type TaskDto = {
   id: string;
-  plannerId: string;
   bucketId: string;
   title: string;
   percentComplete: number;
@@ -19,10 +19,33 @@ export type TaskDto = {
   completedDateTime?: Date;
   hours?: number;
   status?: TaskStatus;
-  assignments?: string[];
+  planner?: PlannerInTask;
+  assignments?: UserAssignment[];
 };
 
 export class TaskFilter {
+  @IsOptional()
+  @IsString()
+  title: string;
+
+  @IsOptional()
+  @IsNumber()
+  percentComplete: number;
+
+  @IsOptional()
+  @IsNumber()
+  priority: number;
+
+  @IsOptional()
+  @IsEnum(TaskStatus)
+  status: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  isOverdue: boolean;
+}
+
+export class PaginationQueryWithTaskFilter extends PaginationQuery {
   @IsOptional()
   @IsString()
   title: string;

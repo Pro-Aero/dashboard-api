@@ -5,8 +5,8 @@ import { BucketRepository } from './repositories/bucket.repository';
 export class BucketsService {
   constructor(private readonly repository: BucketRepository) {}
 
-  async upsert(bucket: BucketEntity): Promise<BucketEntity> {
-    return await this.repository.upsert(bucket);
+  async upsert(bucket: BucketEntity): Promise<void> {
+    await this.repository.upsert(bucket);
   }
 
   async getAll(): Promise<BucketEntity[]> {

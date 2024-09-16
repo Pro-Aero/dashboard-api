@@ -12,7 +12,7 @@ export class AssignmentsService {
     private readonly usersService: UsersService,
   ) {}
 
-  async upsert(dto: CreateAssignmentDto): Promise<AssignmentEntity> {
+  async upsert(dto: CreateAssignmentDto): Promise<void> {
     const userExists = await this.usersService.exists(dto.userId);
     if (!userExists) return;
 
@@ -22,6 +22,6 @@ export class AssignmentsService {
       userId: dto.userId,
     };
 
-    return await this.repository.upsert(entity);
+    await this.repository.upsert(entity);
   }
 }

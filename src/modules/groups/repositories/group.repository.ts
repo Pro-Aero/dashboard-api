@@ -31,16 +31,14 @@ export class GroupRepository {
     return GroupMapper.modelToEntity(group);
   }
 
-  async upsert(user: GroupEntity): Promise<GroupEntity> {
+  async upsert(user: GroupEntity): Promise<void> {
     const data = GroupMapper.entityToModel(user);
 
-    const groupModel = await prisma.group.upsert({
+    await prisma.group.upsert({
       where: { id: data.id },
       create: data,
       update: data,
     });
-
-    return GroupMapper.modelToEntity(groupModel);
   }
 
   async remove(userId: string): Promise<void> {

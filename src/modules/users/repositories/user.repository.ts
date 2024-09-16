@@ -31,16 +31,14 @@ export class UserRepository {
     return UsersMapper.modelToEntity(user);
   }
 
-  async upsert(user: UserEntity): Promise<UserEntity> {
+  async upsert(user: UserEntity): Promise<void> {
     const data = UsersMapper.entityToModel(user);
 
-    const userModel = await prisma.user.upsert({
+    await prisma.user.upsert({
       where: { id: data.id },
       create: data,
       update: data,
     });
-
-    return UsersMapper.modelToEntity(userModel);
   }
 
   async remove(userId: string): Promise<void> {

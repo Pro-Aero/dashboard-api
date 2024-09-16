@@ -31,8 +31,8 @@ export class PlannersService {
     return planners.map(PlannersMapper.entityToDTO);
   }
 
-  async upsert(planner: PlannerEntity): Promise<PlannerEntity> {
-    return await this.repository.upsert(planner);
+  async upsert(planner: PlannerEntity): Promise<void> {
+    await this.repository.upsert(planner);
   }
 
   async removeOutdated(apiPlanners: PlannerEntity[]): Promise<void> {

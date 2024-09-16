@@ -3,16 +3,14 @@ import { AssignmentsMapper } from '../mappers/assignment.mapper';
 import { AssignmentEntity } from '../models/assignment.entity';
 
 export class AssignmentRepository {
-  async upsert(assignment: AssignmentEntity): Promise<AssignmentEntity> {
+  async upsert(assignment: AssignmentEntity): Promise<void> {
     const data = AssignmentsMapper.entityToModel(assignment);
 
-    const assignmentModel = await prisma.assignment.upsert({
+    await prisma.assignment.upsert({
       where: { id: data.id },
       create: data,
       update: data,
     });
-
-    return AssignmentsMapper.modelToEntity(assignmentModel);
   }
 
   async getAll(): Promise<AssignmentEntity[]> {

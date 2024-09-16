@@ -44,16 +44,14 @@ export class PlannerRepository {
     return PlannersMapper.modelToEntity(planner);
   }
 
-  async upsert(user: PlannerEntity): Promise<PlannerEntity> {
+  async upsert(user: PlannerEntity): Promise<void> {
     const data = PlannersMapper.entityToModel(user);
 
-    const userModel = await prisma.planner.upsert({
+    await prisma.planner.upsert({
       where: { id: data.id },
       create: data,
       update: data,
     });
-
-    return PlannersMapper.modelToEntity(userModel);
   }
 
   async update(

@@ -24,8 +24,8 @@ export class UsersService {
     return !!user;
   }
 
-  async upsert(user: UserEntity): Promise<UserEntity> {
-    return await this.repository.upsert(user);
+  async upsert(user: UserEntity): Promise<void> {
+    await this.repository.upsert(user);
   }
 
   async removeOutdated(apiUsers: UserEntity[]): Promise<void> {

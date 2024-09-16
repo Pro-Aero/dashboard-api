@@ -1,11 +1,21 @@
-import { Prisma, Task } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { TaskDto } from '../models/task.dto';
 import { TaskApiResponse, TaskEntity, TaskStatus } from '../models/task.entity';
 export class TasksMapper {
-  static modelToEntity(raw: Task): TaskEntity {
+  static modelToEntity(
+    raw: Prisma.TaskGetPayload<{
+      include: {
+        planner: true;
+        assignments: {
+          include: {
+            user: true;
+          };
+        };
+      };
+    }>,
+  ): TaskEntity {
     const entity: TaskEntity = {
       id: raw.id,
-      plannerId: raw.plannerId,
       bucketId: raw.bucketId,
       title: raw.title,
       percentComplete: raw.percentComplete,
@@ -19,6 +29,16 @@ export class TasksMapper {
         raw.dueDateTime,
         raw.completedDateTime,
       ),
+      planner: {
+        id: raw.planner.id,
+        title: raw.planner.title,
+      },
+      assignments: raw.assignments.map((assignment) => {
+        return {
+          id: assignment.user.id,
+          name: assignment.user.displayName,
+        };
+      }),
     };
 
     return entity;
@@ -27,7 +47,7 @@ export class TasksMapper {
   static entityToModel(entity: TaskEntity): Prisma.TaskCreateInput {
     return {
       id: entity.id,
-      planner: { connect: { id: entity.plannerId } },
+      planner: { connect: { id: entity.planner.id } },
       bucket: { connect: { id: entity.bucketId } },
       title: entity.title,
       percentComplete: entity.percentComplete,
@@ -42,7 +62,6 @@ export class TasksMapper {
   static entityToDTO(entity: TaskEntity): TaskDto {
     return {
       id: entity.id,
-      plannerId: entity.plannerId,
       bucketId: entity.bucketId,
       title: entity.title,
       percentComplete: entity.percentComplete,
@@ -52,6 +71,16 @@ export class TasksMapper {
       completedDateTime: entity.completedDateTime,
       hours: entity.hours,
       status: entity.status,
+      planner: {
+        id: entity.planner.id,
+        title: entity.planner.title,
+      },
+      assignments: entity.assignments.map((assignment) => {
+        return {
+          id: assignment.id,
+          name: assignment.name,
+        };
+      }),
     };
   }
 
@@ -66,7 +95,11 @@ export class TasksMapper {
       startDateTime: response.startDateTime,
       dueDateTime: response.dueDateTime,
       completedDateTime: response.completedDateTime,
-      assignments: Object.keys(response.assignments),
+      assignments: Object.keys(response.assignments).map((userId) => {
+        return {
+          id: userId,
+        };
+      }),
     };
   }
 

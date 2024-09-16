@@ -19,8 +19,8 @@ export class GroupsService {
     return GroupMapper.entityToDTO(user);
   }
 
-  async upsert(group: GroupEntity): Promise<GroupEntity> {
-    return await this.repository.upsert(group);
+  async upsert(group: GroupEntity): Promise<void> {
+    await this.repository.upsert(group);
   }
 
   async removeOutdated(apiGroups: GroupEntity[]): Promise<void> {
