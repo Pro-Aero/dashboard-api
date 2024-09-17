@@ -6,7 +6,7 @@ import {
   Param,
   Query,
 } from '@nestjs/common';
-import { PaginationQueryWithTaskFilter } from './models/task.dto';
+import { PaginationQueryWithTaskFilter, TaskFilter } from './models/task.dto';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
@@ -28,9 +28,17 @@ export class TasksController {
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAllWithPagination(@Query() query: PaginationQueryWithTaskFilter) {
+    const filter: TaskFilter = {
+      title: query.title,
+      percentComplete: query.percentComplete,
+      priority: query.priority,
+      status: query.status,
+      isOverdue: query.isOverdue,
+    };
     return await this.tasksService.findAllWithPagination(
       query.page,
       query.itemsPerPage,
+      filter,
     );
   }
 }

@@ -67,6 +67,7 @@ export class TaskRepository {
     filter?: TaskFilter,
     plannerId?: string,
   ): Promise<Prisma.TaskWhereInput> {
+    console.log(filter);
     const where: Prisma.TaskWhereInput = {
       plannerId: plannerId ? plannerId : undefined,
       title: filter?.title

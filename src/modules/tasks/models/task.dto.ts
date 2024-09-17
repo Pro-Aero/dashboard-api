@@ -7,6 +7,7 @@ import {
 } from 'class-validator';
 import { PaginationQuery } from 'src/types/pagination-query';
 import { PlannerInTask, TaskStatus, UserAssignment } from './task.entity';
+import { Type } from 'class-transformer';
 
 export type TaskDto = {
   id: string;
@@ -29,10 +30,12 @@ export class TaskFilter {
   title: string;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   percentComplete: number;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   priority: number;
 
@@ -51,10 +54,12 @@ export class PaginationQueryWithTaskFilter extends PaginationQuery {
   title: string;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   percentComplete: number;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
   priority: number;
 
