@@ -4,4 +4,5 @@ export type UserEntity = {
   userPrincipalName: string;
   mail?: string;
   jobTitle?: string;
+  busyHours?: number;
 };

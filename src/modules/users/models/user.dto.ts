@@ -6,6 +6,7 @@ export type UserDto = {
   userPrincipalName: string;
   mail?: string;
   jobTitle?: string;
+  busyHours?: number;
 };
 
 export class UserFilter {

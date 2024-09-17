@@ -1,6 +1,6 @@
 import { Prisma, User } from '@prisma/client';
-import { UserEntity } from '../models/user.entity';
 import { UserDto } from '../models/user.dto';
+import { UserEntity } from '../models/user.entity';
 
 export class UsersMapper {
   static modelToEntity(raw: User): UserEntity {
@@ -32,6 +32,7 @@ export class UsersMapper {
       userPrincipalName: entity.userPrincipalName,
       mail: entity.mail,
       jobTitle: entity.jobTitle,
+      busyHours: entity.busyHours,
     };
   }
 }

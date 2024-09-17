@@ -6,7 +6,7 @@ import {
   Param,
   Query,
 } from '@nestjs/common';
-import { TaskFilter } from '../tasks/models/task.dto';
+import { PaginationQueryWithTaskFilter } from '../tasks/models/task.dto';
 import { TasksService } from '../tasks/tasks.service';
 import { PlannerFilter } from './models/planner.dto';
 import { PlannersService } from './planners.service';
@@ -32,10 +32,17 @@ export class PlannersController {
 
   @Get(':plannerId/tasks')
   @HttpCode(HttpStatus.OK)
-  async findAllByPlannerId(
+  async findAllByPlannerIdWithPagination(
     @Param('plannerId') plannerId: string,
-    @Query() filter: TaskFilter,
+    @Query() query: PaginationQueryWithTaskFilter,
   ) {
-    return await this.tasksService.findAllByPlannerId(plannerId, filter);
+    const { page, itemsPerPage, ...filter } = query;
+
+    return await this.tasksService.findAllByPlannerWithPagination(
+      plannerId,
+      page,
+      itemsPerPage,
+      filter,
+    );
   }
 }

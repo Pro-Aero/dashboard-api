@@ -12,53 +12,73 @@ export class TaskRepository {
     return tasks.map(TasksMapper.modelToSimpleEntity);
   }
 
-  async findAllByPlannerId(
+  async findAllByPlannerWithPagination(
     plannerId: string,
+    page: number,
+    itemsPerPage: number,
     filter?: TaskFilter,
-  ): Promise<TaskEntity[]> {
-    const where = await this.buildTaskFilterCriteria(filter);
+  ): Promise<PaginatedItems<TaskEntity>> {
+    const where = {
+      ...(await this.buildTaskFilterCriteria(filter)),
+      plannerId: plannerId,
+    };
 
-    const tasks = await prisma.task.findMany({
-      where: {
-        ...where,
-        plannerId: plannerId,
-      },
-      include: {
-        planner: true,
-        assignments: {
-          include: {
-            user: true,
+    const [tasks, totalItems] = await Promise.all([
+      prisma.task.findMany({
+        where,
+        take: itemsPerPage,
+        skip: (page - 1) * itemsPerPage,
+        include: {
+          planner: true,
+          assignments: {
+            include: {
+              user: true,
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.task.count({ where }),
+    ]);
 
-    return tasks.map(TasksMapper.modelToEntity);
+    return {
+      data: tasks.map((task) => TasksMapper.modelToEntity(task)),
+      pagination: makePagination(page, itemsPerPage, totalItems),
+    };
   }
 
-  async findAllByUserId(
+  async findAllByUserWithPagination(
     userId: string,
+    page: number,
+    itemsPerPage: number,
     filter?: TaskFilter,
-  ): Promise<TaskEntity[]> {
-    const where = await this.buildTaskFilterCriteria(filter);
-    console.log(filter);
+  ): Promise<PaginatedItems<TaskEntity>> {
+    const where = {
+      ...(await this.buildTaskFilterCriteria(filter)),
+    };
 
-    const tasks = await prisma.task.findMany({
-      where: {
-        ...where,
-        assignments: { some: { userId } },
-      },
-      include: {
-        planner: true,
-        assignments: {
-          include: {
-            user: true,
+    const [tasks, totalItems] = await Promise.all([
+      prisma.task.findMany({
+        where: {
+          assignments: { some: { userId } },
+        },
+        take: itemsPerPage,
+        skip: (page - 1) * itemsPerPage,
+        include: {
+          planner: true,
+          assignments: {
+            include: {
+              user: true,
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.task.count({ where }),
+    ]);
 
-    return tasks.map(TasksMapper.modelToEntity);
+    return {
+      data: tasks.map((task) => TasksMapper.modelToEntity(task)),
+      pagination: makePagination(page, itemsPerPage, totalItems),
+    };
   }
 
   async findAllWithPagination(
@@ -96,10 +116,10 @@ export class TaskRepository {
   ): Promise<Prisma.TaskWhereInput> {
     const where: Prisma.TaskWhereInput = {
       title: filter?.title
-        ? { contains: filter.title, mode: 'insensitive' }
+        ? { contains: filter?.title, mode: 'insensitive' }
         : undefined,
-      percentComplete: filter.percentComplete ?? undefined,
-      priority: filter.priority ?? undefined,
+      percentComplete: filter?.percentComplete ?? undefined,
+      priority: filter?.priority ?? undefined,
     };
 
     return where;

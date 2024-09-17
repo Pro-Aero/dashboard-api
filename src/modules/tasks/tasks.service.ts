@@ -19,20 +19,38 @@ export class TasksService {
     return tasks.map(TasksMapper.entityToDTO);
   }
 
-  async findAllByPlannerId(
+  async findAllByPlannerWithPagination(
     plannerId: string,
+    page: number,
+    itemsPerPage: number,
     filter?: TaskFilter,
-  ): Promise<TaskDto[]> {
-    const tasks = await this.repository.findAllByPlannerId(plannerId, filter);
-    return tasks.map(TasksMapper.entityToDTO);
+  ): Promise<PaginatedItems<TaskDto>> {
+    const tasks = await this.repository.findAllByPlannerWithPagination(
+      plannerId,
+      page,
+      itemsPerPage,
+      filter,
+    );
+
+    tasks.data = tasks.data.map(TasksMapper.entityToDTO);
+    return tasks;
   }
 
-  async findAllByUserId(
+  async findAllByUserWithPagination(
     userId: string,
+    page: number,
+    itemsPerPage: number,
     filter?: TaskFilter,
-  ): Promise<TaskDto[]> {
-    const tasks = await this.repository.findAllByUserId(userId, filter);
-    return tasks.map(TasksMapper.entityToDTO);
+  ): Promise<PaginatedItems<TaskDto>> {
+    const tasks = await this.repository.findAllByUserWithPagination(
+      userId,
+      page,
+      itemsPerPage,
+      filter,
+    );
+
+    tasks.data = tasks.data.map(TasksMapper.entityToDTO);
+    return tasks;
   }
 
   async findAllWithPagination(
@@ -47,7 +65,6 @@ export class TasksService {
     );
 
     tasks.data = tasks.data.map(TasksMapper.entityToDTO);
-
     return tasks;
   }
 

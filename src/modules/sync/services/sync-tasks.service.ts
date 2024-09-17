@@ -6,7 +6,6 @@ import { TasksMapper } from 'src/modules/tasks/mappers/task.mapper';
 import {
   TaskApiResponse,
   TaskEntity,
-  UserAssignment,
 } from 'src/modules/tasks/models/task.entity';
 import { TasksService } from 'src/modules/tasks/tasks.service';
 import { GraphClientService } from './graph-client.service';

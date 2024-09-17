@@ -53,16 +53,8 @@ export class PlannersService {
   }
 
   async calculateTotalHours(planner: PlannerEntity): Promise<PlannerEntity> {
-    const tasks = await this.tasksService.findAllByPlannerId(planner.id);
-
-    const totalHours = tasks.reduce(
-      (acc, task) => acc + (task.hours ? task.hours : 0),
-      0,
-    );
-
+    const totalHours = await this.repository.calculateTotalHours(planner.id);
     planner.totalHours = totalHours;
-    await this.repository.update(planner.id, planner);
-
     return planner;
   }
 }

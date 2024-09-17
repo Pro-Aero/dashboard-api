@@ -71,4 +71,16 @@ export class PlannerRepository {
   async remove(userId: string): Promise<void> {
     await prisma.planner.delete({ where: { id: userId } });
   }
+
+  async calculateTotalHours(plannerId: string): Promise<number> {
+    const result = await prisma.task.aggregate({
+      where: {
+        plannerId,
+        NOT: { hours: null },
+      },
+      _sum: { hours: true },
+    });
+
+    return result._sum.hours ?? 0;
+  }
 }

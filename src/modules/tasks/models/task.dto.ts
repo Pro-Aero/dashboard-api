@@ -41,7 +41,7 @@ export class TaskFilter {
 
   @IsOptional()
   @IsEnum(TaskStatus)
-  status: boolean;
+  status: TaskStatus;
 
   @IsOptional()
   @IsBoolean()
@@ -65,7 +65,7 @@ export class PaginationQueryWithTaskFilter extends PaginationQuery {
 
   @IsOptional()
   @IsEnum(TaskStatus)
-  status: boolean;
+  status: TaskStatus;
 
   @IsOptional()
   @IsBoolean()

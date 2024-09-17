@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { TasksService } from '../tasks/tasks.service';
 import { UsersMapper } from './mappers/user.mapper';
 import { UserDto, UserFilter } from './models/user.dto';
 import { UserEntity } from './models/user.entity';
@@ -6,16 +7,25 @@ import { UserRepository } from './repositories/user.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly repository: UserRepository) {}
+  constructor(
+    private readonly repository: UserRepository,
+    private readonly tasksService: TasksService,
+  ) {}
 
   async findAll(filter?: UserFilter): Promise<UserDto[]> {
-    const users = await this.repository.findAll(filter);
+    let users = await this.repository.findAll(filter);
+    const usersPromises = users.map(async (user) => {
+      user.busyHours = await this.repository.calculateBusyHours(user.id);
+      return user;
+    });
+    users = await Promise.all(usersPromises);
     return users.map(UsersMapper.entityToDTO);
   }
 
   async findById(userId: string): Promise<UserDto> {
     const user = await this.repository.findById(userId);
     if (!user) throw new NotFoundException();
+    user.busyHours = await this.repository.calculateBusyHours(user.id);
     return UsersMapper.entityToDTO(user);
   }
 

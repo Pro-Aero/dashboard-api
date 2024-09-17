@@ -44,4 +44,18 @@ export class UserRepository {
   async remove(userId: string): Promise<void> {
     await prisma.user.delete({ where: { id: userId } });
   }
+
+  async calculateBusyHours(userId: string): Promise<number> {
+    const result = await prisma.task.aggregate({
+      where: {
+        assignments: { some: { userId } },
+        NOT: { percentComplete: 100, hours: null },
+      },
+      _sum: {
+        hours: true,
+      },
+    });
+
+    return result._sum.hours ?? 0;
+  }
 }
