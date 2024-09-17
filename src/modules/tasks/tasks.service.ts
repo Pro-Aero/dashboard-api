@@ -20,10 +20,18 @@ export class TasksService {
   }
 
   async findAllByPlannerId(
-    taskId: string,
+    plannerId: string,
     filter?: TaskFilter,
   ): Promise<TaskDto[]> {
-    const tasks = await this.repository.findAllByPlannerId(taskId, filter);
+    const tasks = await this.repository.findAllByPlannerId(plannerId, filter);
+    return tasks.map(TasksMapper.entityToDTO);
+  }
+
+  async findAllByUserId(
+    userId: string,
+    filter?: TaskFilter,
+  ): Promise<TaskDto[]> {
+    const tasks = await this.repository.findAllByUserId(userId, filter);
     return tasks.map(TasksMapper.entityToDTO);
   }
 

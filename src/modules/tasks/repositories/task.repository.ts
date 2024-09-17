@@ -16,10 +16,38 @@ export class TaskRepository {
     plannerId: string,
     filter?: TaskFilter,
   ): Promise<TaskEntity[]> {
-    const where = await this.buildTaskFilterCriteria(filter, plannerId);
+    const where = await this.buildTaskFilterCriteria(filter);
 
     const tasks = await prisma.task.findMany({
-      where,
+      where: {
+        ...where,
+        plannerId: plannerId,
+      },
+      include: {
+        planner: true,
+        assignments: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    return tasks.map(TasksMapper.modelToEntity);
+  }
+
+  async findAllByUserId(
+    userId: string,
+    filter?: TaskFilter,
+  ): Promise<TaskEntity[]> {
+    const where = await this.buildTaskFilterCriteria(filter);
+    console.log(filter);
+
+    const tasks = await prisma.task.findMany({
+      where: {
+        ...where,
+        assignments: { some: { userId } },
+      },
       include: {
         planner: true,
         assignments: {
@@ -65,18 +93,13 @@ export class TaskRepository {
 
   async buildTaskFilterCriteria(
     filter?: TaskFilter,
-    plannerId?: string,
   ): Promise<Prisma.TaskWhereInput> {
-    console.log(filter);
     const where: Prisma.TaskWhereInput = {
-      plannerId: plannerId ? plannerId : undefined,
       title: filter?.title
         ? { contains: filter.title, mode: 'insensitive' }
         : undefined,
-      percentComplete: filter?.percentComplete
-        ? filter.percentComplete
-        : undefined,
-      priority: filter?.priority ? filter.priority : undefined,
+      percentComplete: filter.percentComplete ?? undefined,
+      priority: filter.priority ?? undefined,
     };
 
     return where;
