@@ -57,6 +57,7 @@ export class TasksService {
     const dbTasks = await this.repository.findAll();
 
     const apiTasksMap = new Map(apiTasks.map((task) => [task.id, task]));
+
     const tasksToRemove = dbTasks.filter((task) => !apiTasksMap.has(task.id));
 
     await Promise.all(

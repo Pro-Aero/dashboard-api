@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, Task } from '@prisma/client';
 import { TaskDto } from '../models/task.dto';
 import { TaskApiResponse, TaskEntity, TaskStatus } from '../models/task.entity';
 export class TasksMapper {
@@ -39,6 +39,28 @@ export class TasksMapper {
           name: assignment.user.displayName,
         };
       }),
+    };
+
+    return entity;
+  }
+
+  static modelToSimpleEntity(raw: Task): TaskEntity {
+    const entity: TaskEntity = {
+      id: raw.id,
+      plannerId: raw.plannerId,
+      bucketId: raw.bucketId,
+      title: raw.title,
+      percentComplete: raw.percentComplete,
+      priority: raw.priority,
+      startDateTime: raw.startDateTime,
+      dueDateTime: raw.dueDateTime,
+      completedDateTime: raw.completedDateTime,
+      hours: raw.hours,
+      status: TasksMapper.toStatus(
+        raw.startDateTime,
+        raw.dueDateTime,
+        raw.completedDateTime,
+      ),
     };
 
     return entity;
@@ -87,7 +109,6 @@ export class TasksMapper {
   static apiToEntity(response: TaskApiResponse): TaskEntity {
     return {
       id: response.id,
-      plannerId: response.planId,
       bucketId: response.bucketId,
       title: response.title,
       percentComplete: response.percentComplete,
@@ -95,6 +116,7 @@ export class TasksMapper {
       startDateTime: response.startDateTime,
       dueDateTime: response.dueDateTime,
       completedDateTime: response.completedDateTime,
+      planner: { id: response.planId },
       assignments: Object.keys(response.assignments).map((userId) => {
         return {
           id: userId,

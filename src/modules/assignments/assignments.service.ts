@@ -14,7 +14,11 @@ export class AssignmentsService {
 
   async upsert(dto: CreateAssignmentDto): Promise<void> {
     const userExists = await this.usersService.exists(dto.userId);
-    if (!userExists) return;
+    const assignmentExists = await this.repository.exists(
+      dto.taskId,
+      dto.userId,
+    );
+    if (!userExists || assignmentExists) return;
 
     const entity: AssignmentEntity = {
       id: crypto.randomUUID(),

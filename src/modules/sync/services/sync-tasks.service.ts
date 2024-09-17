@@ -43,10 +43,8 @@ export class SyncTasksService {
         task.hours = this.tasksService.extractHoursFromTitle(task.title);
         await this.tasksService.upsert(task);
 
-        const assignments = this.removeDuplicates(task.assignments);
-
         Promise.all(
-          assignments.map((user) =>
+          task.assignments.map((user) =>
             this.assignmentsService.upsert({
               taskId: task.id,
               userId: user.id,
@@ -75,16 +73,5 @@ export class SyncTasksService {
       .get();
 
     return value.map(TasksMapper.apiToEntity);
-  }
-
-  removeDuplicates(assignments: UserAssignment[]): UserAssignment[] {
-    const uniqueIds = new Set();
-    return assignments.filter((assignment) => {
-      if (uniqueIds.has(assignment.id)) {
-        return false;
-      }
-      uniqueIds.add(assignment.id);
-      return true;
-    });
   }
 }

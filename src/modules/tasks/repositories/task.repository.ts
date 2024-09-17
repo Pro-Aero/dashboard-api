@@ -9,7 +9,7 @@ import { TaskEntity } from '../models/task.entity';
 export class TaskRepository {
   async findAll(): Promise<TaskEntity[]> {
     const tasks = await prisma.task.findMany();
-    return tasks.map(TasksMapper.modelToEntity);
+    return tasks.map(TasksMapper.modelToSimpleEntity);
   }
 
   async findAllByPlannerId(
@@ -18,7 +18,17 @@ export class TaskRepository {
   ): Promise<TaskEntity[]> {
     const where = await this.buildTaskFilterCriteria(filter, plannerId);
 
-    const tasks = await prisma.task.findMany({ where });
+    const tasks = await prisma.task.findMany({
+      where,
+      include: {
+        planner: true,
+        assignments: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
 
     return tasks.map(TasksMapper.modelToEntity);
   }
@@ -85,16 +95,6 @@ export class TaskRepository {
     });
 
     if (!task) return null;
-
-    console.log('Número de assignments:', task.assignments.length);
-
-    task.assignments.forEach((ass, index) => {
-      console.log(`Assignment ${index + 1}:`, {
-        assignmentId: ass.id,
-        userId: ass.user.id,
-        displayName: ass.user.displayName,
-      });
-    });
 
     return TasksMapper.modelToEntity(task);
   }
