@@ -90,8 +90,8 @@ export class TasksService {
     );
   }
 
-  async countTasks(userId: string): Promise<number[]> {
-    return await this.repository.countTasks(userId);
+  async countTasksByPriority(userId: string): Promise<number[]> {
+    return await this.repository.countTasksByPriority(userId);
   }
 
   extractHoursFromTitle(title: string): number {

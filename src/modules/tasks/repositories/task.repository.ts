@@ -177,7 +177,7 @@ export class TaskRepository {
     await prisma.task.delete({ where: { id: taskId } });
   }
 
-  async countTasks(userId: string): Promise<number[]> {
+  async countTasksByPriority(userId: string): Promise<number[]> {
     const filter: Prisma.TaskWhereInput = {
       assignments: { some: { userId } },
       NOT: { percentComplete: 100 },

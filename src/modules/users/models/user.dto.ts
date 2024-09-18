@@ -21,7 +21,7 @@ export class UserFilter {
 
 export type UserTasksStatusDto = {
   userId: string;
-  taskSummary: {
+  tasksSummary: {
     totalTasks: number;
     taskCountsByPriority: {
       low: number;
@@ -30,7 +30,7 @@ export type UserTasksStatusDto = {
       urgent: number;
     };
   };
-  availability: {
+  weeklyAvailability: {
     totalAvailableHours: number;
     hoursOccupied: number;
     hoursRemaining: number;

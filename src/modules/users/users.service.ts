@@ -55,17 +55,17 @@ export class UsersService {
     user.busyHours = await this.repository.calculateBusyHours(user.id);
 
     const [total, low, medium, important, urgent] =
-      await this.tasksService.countTasks(userId);
+      await this.tasksService.countTasksByPriority(userId);
 
     const totalHours = 40;
 
     const tasksStatus: UserTasksStatusDto = {
       userId: user.id,
-      taskSummary: {
+      tasksSummary: {
         totalTasks: total,
         taskCountsByPriority: { low, medium, important, urgent },
       },
-      availability: {
+      weeklyAvailability: {
         totalAvailableHours: totalHours,
         hoursOccupied: user.busyHours,
         hoursRemaining: totalHours - user.busyHours,
