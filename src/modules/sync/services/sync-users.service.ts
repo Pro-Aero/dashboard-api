@@ -35,6 +35,12 @@ export class SyncUsersService {
       .select('id,displayName,userPrincipalName,mail,jobTitle')
       .get();
 
-    return value;
+    const emails = ['@proaero.aero', '@flyaxis.aero'];
+
+    const usersFiltered = value.filter((user) =>
+      emails.some((email) => (user.mail ? user.mail.endsWith(email) : false)),
+    );
+
+    return usersFiltered;
   }
 }
