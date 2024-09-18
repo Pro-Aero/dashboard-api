@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -7,7 +8,6 @@ import {
 } from 'class-validator';
 import { PaginationQuery } from 'src/types/pagination-query';
 import { PlannerInTask, TaskStatus, UserAssignment } from './task.entity';
-import { Type } from 'class-transformer';
 
 export type TaskDto = {
   id: string;

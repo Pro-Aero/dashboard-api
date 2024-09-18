@@ -45,4 +45,10 @@ export class UsersController {
       filter,
     );
   }
+
+  @Get(':userId/tasks/status')
+  @HttpCode(HttpStatus.OK)
+  async getUserTasksStatus(@Param('userId') userId: string) {
+    return await this.usersService.getUserTasksStatus(userId);
+  }
 }

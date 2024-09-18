@@ -176,4 +176,22 @@ export class TaskRepository {
   async remove(taskId: string): Promise<void> {
     await prisma.task.delete({ where: { id: taskId } });
   }
+
+  async countTasks(userId: string): Promise<number[]> {
+    const filter: Prisma.TaskWhereInput = {
+      assignments: { some: { userId } },
+      NOT: { percentComplete: 100 },
+    };
+
+    const [totalTasks, countLow, countMedium, countImportant, countUrgent] =
+      await Promise.all([
+        prisma.task.count({ where: filter }),
+        prisma.task.count({ where: { ...filter, priority: 9 } }),
+        prisma.task.count({ where: { ...filter, priority: 5 } }),
+        prisma.task.count({ where: { ...filter, priority: 3 } }),
+        prisma.task.count({ where: { ...filter, priority: 1 } }),
+      ]);
+
+    return [totalTasks, countLow, countMedium, countImportant, countUrgent];
+  }
 }

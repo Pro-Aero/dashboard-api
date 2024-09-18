@@ -18,3 +18,21 @@ export class UserFilter {
   @IsString()
   mail: string;
 }
+
+export type UserTasksStatusDto = {
+  userId: string;
+  taskSummary: {
+    totalTasks: number;
+    taskCountsByPriority: {
+      low: number;
+      medium: number;
+      important: number;
+      urgent: number;
+    };
+  };
+  availability: {
+    totalAvailableHours: number;
+    hoursOccupied: number;
+    hoursRemaining: number;
+  };
+};

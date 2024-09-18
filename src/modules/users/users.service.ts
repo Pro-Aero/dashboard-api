@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TasksService } from '../tasks/tasks.service';
 import { UsersMapper } from './mappers/user.mapper';
-import { UserDto, UserFilter } from './models/user.dto';
+import { UserDto, UserFilter, UserTasksStatusDto } from './models/user.dto';
 import { UserEntity } from './models/user.entity';
 import { UserRepository } from './repositories/user.repository';
 
@@ -47,5 +47,31 @@ export class UsersService {
     await Promise.all(
       usersToRemove.map(async (user) => await this.repository.remove(user.id)),
     );
+  }
+
+  async getUserTasksStatus(userId: string): Promise<UserTasksStatusDto> {
+    const user = await this.repository.findById(userId);
+    if (!user) throw new NotFoundException();
+    user.busyHours = await this.repository.calculateBusyHours(user.id);
+
+    const [total, low, medium, important, urgent] =
+      await this.tasksService.countTasks(userId);
+
+    const totalHours = 40;
+
+    const tasksStatus: UserTasksStatusDto = {
+      userId: user.id,
+      taskSummary: {
+        totalTasks: total,
+        taskCountsByPriority: { low, medium, important, urgent },
+      },
+      availability: {
+        totalAvailableHours: totalHours,
+        hoursOccupied: user.busyHours,
+        hoursRemaining: totalHours - user.busyHours,
+      },
+    };
+
+    return tasksStatus;
   }
 }

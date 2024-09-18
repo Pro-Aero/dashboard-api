@@ -90,6 +90,10 @@ export class TasksService {
     );
   }
 
+  async countTasks(userId: string): Promise<number[]> {
+    return await this.repository.countTasks(userId);
+  }
+
   extractHoursFromTitle(title: string): number {
     const parts = title.split('-');
     const lastPart = parts[parts.length - 1].trim();
