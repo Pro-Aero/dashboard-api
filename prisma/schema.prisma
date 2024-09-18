@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
@@ -44,7 +44,7 @@ model Planner {
   tasks      Task[]
   buckets    Bucket[]
 
-  group Group @relation(fields: [groupId], references: [id])
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@map("planners")
 }
@@ -62,8 +62,8 @@ model Task {
   hours             Float?
   assignments       Assignment[]
 
-  planner Planner @relation(fields: [plannerId], references: [id])
-  bucket  Bucket  @relation(fields: [bucketId], references: [id])
+  planner Planner @relation(fields: [plannerId], references: [id], onDelete: Cascade)
+  bucket  Bucket  @relation(fields: [bucketId], references: [id], onDelete: Cascade)
 
   @@map("tasks")
 }
@@ -73,8 +73,8 @@ model Assignment {
   taskId String @map("task_id")
   userId String @map("user_id")
 
-  task Task @relation(fields: [taskId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("assignments")
 }
@@ -83,9 +83,9 @@ model Bucket {
   id        String @id
   plannerId String @map("plan_id")
   name      String
-  tasks      Task[]
+  tasks     Task[]
 
-  planner Planner @relation(fields: [plannerId], references: [id])
+  planner Planner @relation(fields: [plannerId], references: [id], onDelete: Cascade)
 
   @@map("buckets")
 }
