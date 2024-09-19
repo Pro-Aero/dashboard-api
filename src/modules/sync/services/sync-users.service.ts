@@ -35,12 +35,32 @@ export class SyncUsersService {
       .select('id,displayName,userPrincipalName,mail,jobTitle')
       .get();
 
-    const emails = ['@proaero.aero', '@flyaxis.aero'];
+    return this.filterUsers(value);
+  }
 
-    const usersFiltered = value.filter((user) =>
-      emails.some((email) => (user.mail ? user.mail.endsWith(email) : false)),
+  filterUsers(users: UserEntity[]): UserEntity[] {
+    const domains = ['@proaero.aero', '@flyaxis.aero'];
+    const emailsToExclude = new Set([
+      'barbara.sena@proaero.aero',
+      'irai.silva@proaero.aero',
+      'paulo.verdelli@proaero.aero',
+      'priscila.sampaio@proaero.aero',
+      'TI@proaero.aero',
+      'ctm@proaero.aero',
+    ]);
+
+    return users.filter((user) =>
+      domains.some((domain) => {
+        if (
+          user.mail &&
+          user.mail.endsWith(domain) &&
+          !emailsToExclude.has(user.mail)
+        ) {
+          return true;
+        }
+
+        return false;
+      }),
     );
-
-    return usersFiltered;
   }
 }
