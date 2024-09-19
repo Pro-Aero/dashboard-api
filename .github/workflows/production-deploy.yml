@@ -1,0 +1,40 @@
+name: Deploy to production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-to-production:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.IMAGE_PUSH_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.IMAGE_PUSH_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build the Docker image
+        run: |
+          TAG=$(git rev-parse --short HEAD)
+          docker build -f Dockerfile -t dashboard-api .
+          docker tag dashboard-api ${{ vars.IMAGE_HOST }}:$(echo $TAG)
+          docker push ${{ vars.IMAGE_HOST }}:$(echo $TAG)
+          docker tag dashboard-api ${{ vars.IMAGE_HOST }}:production
+          docker push ${{ vars.IMAGE_HOST }}:production
+
+      - name: Update production server
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRODUCTION_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.PRODUCTION_HOST }} > ~/.ssh/known_hosts
+          ssh ec2-user@${{ secrets.PRODUCTION_HOST }} "./update_server.sh"
