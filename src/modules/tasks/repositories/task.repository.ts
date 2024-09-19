@@ -54,13 +54,12 @@ export class TaskRepository {
   ): Promise<PaginatedItems<TaskEntity>> {
     const where = {
       ...(await this.buildTaskFilterCriteria(filter)),
+      assignments: { some: { userId } },
     };
 
     const [tasks, totalItems] = await Promise.all([
       prisma.task.findMany({
-        where: {
-          assignments: { some: { userId } },
-        },
+        where,
         take: itemsPerPage,
         skip: (page - 1) * itemsPerPage,
         include: {
@@ -109,20 +108,6 @@ export class TaskRepository {
       data: tasks.map((task) => TasksMapper.modelToEntity(task)),
       pagination: makePagination(page, itemsPerPage, totalItems),
     };
-  }
-
-  async buildTaskFilterCriteria(
-    filter?: TaskFilter,
-  ): Promise<Prisma.TaskWhereInput> {
-    const where: Prisma.TaskWhereInput = {
-      title: filter?.title
-        ? { contains: filter?.title, mode: 'insensitive' }
-        : undefined,
-      percentComplete: filter?.percentComplete ?? undefined,
-      priority: filter?.priority ?? undefined,
-    };
-
-    return where;
   }
 
   async findById(taskId: string): Promise<TaskEntity> {
@@ -193,5 +178,19 @@ export class TaskRepository {
       ]);
 
     return [totalTasks, countLow, countMedium, countImportant, countUrgent];
+  }
+
+  async buildTaskFilterCriteria(
+    filter?: TaskFilter,
+  ): Promise<Prisma.TaskWhereInput> {
+    const where: Prisma.TaskWhereInput = {
+      title: filter?.title
+        ? { contains: filter?.title, mode: 'insensitive' }
+        : undefined,
+      percentComplete: filter?.percentComplete ?? undefined,
+      priority: filter?.priority ?? undefined,
+    };
+
+    return where;
   }
 }

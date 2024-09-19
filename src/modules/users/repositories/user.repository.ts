@@ -49,7 +49,7 @@ export class UserRepository {
     const result = await prisma.task.aggregate({
       where: {
         assignments: { some: { userId } },
-        NOT: { percentComplete: 100, hours: null },
+        NOT: { OR: [{ percentComplete: 100 }, { hours: null }] },
       },
       _sum: {
         hours: true,
