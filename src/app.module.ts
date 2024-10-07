@@ -9,6 +9,7 @@ import { PlannersModule } from './modules/planners/planners.module';
 import { SyncModule } from './modules/sync/sync.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
+import { GraphsModule } from './modules/graphs/graphs.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UsersModule } from './modules/users/users.module';
     BucketsModule,
     AssignmentsModule,
     AuthModule,
+    GraphsModule,
   ],
   controllers: [],
   providers: [],
