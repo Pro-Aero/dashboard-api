@@ -50,6 +50,24 @@ export class GraphsService {
     return Object.fromEntries(mergedTasksPerDay);
   }
 
+  async calculateTasksAndWorkedHours(userId: string, filter: DateRangeFilter) {
+    const tasks = await this.repository.findAllTasksInYear(userId, filter);
+    const tasksPerDay = await this.calculateTasksPerDay(tasks);
+    const mergedTasksPerDay = await this.mergeTasksPerDay(tasksPerDay);
+
+    const result = {
+      tasks: tasks.map((task, index) => {
+        return {
+          taskInfo: task,
+          taskPerDay: Object.fromEntries(tasksPerDay[index]),
+        };
+      }),
+      totalTasksPerDay: Object.fromEntries(mergedTasksPerDay),
+    };
+
+    return result;
+  }
+
   async calculateTasksPerDay(
     tasks: TaskEntity[],
   ): Promise<Map<string, TasksPerDay>[]> {

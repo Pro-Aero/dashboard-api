@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { GraphsService } from './graphs.service';
 import { DateRangeFilter } from './models/graphs.dto';
 
@@ -9,5 +9,16 @@ export class GraphsController {
   @Get('team/availability')
   async calculateAllWorkedHours(@Query() filter: DateRangeFilter) {
     return await this.graphsService.calculateTeamWorkedHours(filter);
+  }
+
+  @Get('tasks/user/:userId')
+  async calculateTasksAndWorkedHours(
+    @Param('userId') userId: string,
+    @Query() filter: DateRangeFilter,
+  ) {
+    return await this.graphsService.calculateTasksAndWorkedHours(
+      userId,
+      filter,
+    );
   }
 }
