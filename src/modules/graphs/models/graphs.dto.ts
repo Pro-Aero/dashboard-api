@@ -6,6 +6,12 @@ export type TasksPerDayDto = {
   [k: string]: TasksPerDay;
 };
 
+export type TeamWorkedHoursDto = {
+  userId: string;
+  userName: string;
+  tasksPerDays: TasksPerDayDto;
+};
+
 export class DateRangeFilter {
   @IsOptional()
   @Type(() => Date)

@@ -6,12 +6,8 @@ import { DateRangeFilter } from './models/graphs.dto';
 export class GraphsController {
   constructor(private readonly graphsService: GraphsService) {}
 
-  @Get()
+  @Get('team/availability')
   async calculateAllWorkedHours(@Query() filter: DateRangeFilter) {
-    return await this.graphsService.calculateAllWorkedHours(filter);
-    return await this.graphsService.calculateWorkedHours(
-      '6c119436-3436-437a-b400-320f4a310204',
-      filter,
-    );
+    return await this.graphsService.calculateTeamWorkedHours(filter);
   }
 }

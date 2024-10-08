@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
+import { TaskEntity } from '../tasks/models/task.entity';
 import { UsersService } from '../users/users.service';
-import { DateRangeFilter, TasksPerDayDto } from './models/graphs.dto';
+import {
+  DateRangeFilter,
+  TasksPerDayDto,
+  TeamWorkedHoursDto,
+} from './models/graphs.dto';
 import {
   MAX_WORKED_HOURS_PER_DAY,
   MAX_WORKED_HOURS_PER_WEEK,
@@ -17,7 +22,9 @@ export class GraphsService {
     private readonly usersService: UsersService,
   ) {}
 
-  async calculateAllWorkedHours(filter: DateRangeFilter) {
+  async calculateTeamWorkedHours(
+    filter: DateRangeFilter,
+  ): Promise<TeamWorkedHoursDto[]> {
     const users = await this.usersService.findAll();
 
     const result = users.map(async (user) => {
@@ -37,7 +44,15 @@ export class GraphsService {
     filter: DateRangeFilter,
   ): Promise<TasksPerDayDto> {
     const tasks = await this.repository.findAllTasksInYear(userId, filter);
+    const tasksPerDay = await this.calculateTasksPerDay(tasks);
+    const mergedTasksPerDay = await this.mergeTasksPerDay(tasksPerDay);
 
+    return Object.fromEntries(mergedTasksPerDay);
+  }
+
+  async calculateTasksPerDay(
+    tasks: TaskEntity[],
+  ): Promise<Map<string, TasksPerDay>[]> {
     const tasksPerDay: Map<string, TasksPerDay>[] = tasks.map((task) => {
       const days = new Map<string, TasksPerDay>();
 
@@ -77,8 +92,14 @@ export class GraphsService {
       return days;
     });
 
-    const mergedTasksPerDay = new Map<string, TasksPerDay>();
+    return tasksPerDay;
+  }
+
+  async mergeTasksPerDay(
+    tasksPerDay: Map<string, TasksPerDay>[],
+  ): Promise<Map<string, TasksPerDay>> {
     let date = DateTime.now().set({ month: 1, day: 1 });
+    const mergedTasksPerDay = new Map<string, TasksPerDay>();
     const queue: TasksPerDay[] = [];
 
     while (!this.isLastDayOfYear(date)) {
@@ -184,7 +205,7 @@ export class GraphsService {
       date = date.plus({ days: 1 });
     }
 
-    return Object.fromEntries(mergedTasksPerDay);
+    return mergedTasksPerDay;
   }
 
   isLastDayOfYear(date: DateTime) {
