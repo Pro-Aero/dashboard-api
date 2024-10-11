@@ -43,7 +43,7 @@ export class GraphsService {
     userId: string,
     filter: DateRangeFilter,
   ): Promise<TasksPerDayDto> {
-    const tasks = await this.repository.findAllTasksInYear(userId, filter);
+    const tasks = await this.repository.findAllTasks(userId, filter);
     const tasksPerDay = await this.calculateTasksPerDay(tasks);
     const mergedTasksPerDay = await this.mergeTasksPerDay(tasksPerDay);
 
@@ -51,15 +51,16 @@ export class GraphsService {
   }
 
   async calculateTasksAndWorkedHours(userId: string, filter: DateRangeFilter) {
-    const tasks = await this.repository.findAllTasksInYear(userId, filter);
+    const tasks = await this.repository.findAllTasks(userId, filter);
     const tasksPerDay = await this.calculateTasksPerDay(tasks);
     const mergedTasksPerDay = await this.mergeTasksPerDay(tasksPerDay);
+    const groupMergedTasks = this.groupMergedTasksPerDay(mergedTasksPerDay);
 
     const result = {
-      tasks: tasks.map((task, index) => {
+      tasks: tasks.map((task) => {
         return {
           taskInfo: task,
-          taskPerDay: Object.fromEntries(tasksPerDay[index]),
+          taskPerDay: Object.fromEntries(groupMergedTasks.get(task.id)),
         };
       }),
       totalTasksPerDay: Object.fromEntries(mergedTasksPerDay),
@@ -162,9 +163,9 @@ export class GraphsService {
         }
       }
 
-      const tasks: TasksPerDay[] = tasksPerDay.reduce((acc, map) => {
-        if (map.has(date.toISODate())) {
-          acc.push(map.get(date.toISODate()));
+      const tasks: TasksPerDay[] = tasksPerDay.reduce((acc, taskMap) => {
+        if (taskMap.has(date.toISODate())) {
+          acc.push(taskMap.get(date.toISODate()));
         }
 
         return acc;
@@ -185,7 +186,6 @@ export class GraphsService {
         } else if (mergedHours !== MAX_WORKED_HOURS_PER_DAY) {
           task.totalHours -= MAX_WORKED_HOURS_PER_DAY - mergedHours;
           task.tasks[0].hours = task.totalHours;
-          console.log(mergedHours);
           mergedHours = MAX_WORKED_HOURS_PER_DAY;
           mergedTasks = mergedTasks.concat(task.tasks);
 
@@ -224,6 +224,40 @@ export class GraphsService {
     }
 
     return mergedTasksPerDay;
+  }
+
+  groupMergedTasksPerDay(
+    mergedTasksPerDay: Map<string, TasksPerDay>,
+  ): Map<string, Map<string, TasksPerDay>> {
+    const tasks = new Map<string, Map<string, TasksPerDay>>();
+
+    mergedTasksPerDay.forEach((value, key) => {
+      if (value.isWeekend) return;
+
+      value.tasks.map((task) => {
+        if (!tasks.has(task.taskId)) {
+          const day = new Map<string, TasksPerDay>();
+
+          day.set(key, {
+            totalHours: task.hours,
+            tasks: [task],
+            isWeekend: false,
+          });
+
+          tasks.set(task.taskId, day);
+        } else {
+          const day = tasks.get(task.taskId);
+
+          day.set(key, {
+            totalHours: task.hours,
+            tasks: [task],
+            isWeekend: false,
+          });
+        }
+      });
+    });
+
+    return tasks;
   }
 
   isLastDayOfYear(date: DateTime) {

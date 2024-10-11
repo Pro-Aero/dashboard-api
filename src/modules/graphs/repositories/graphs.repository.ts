@@ -7,7 +7,7 @@ import { DateRangeFilter } from '../models/graphs.dto';
 
 @Injectable()
 export class GraphsRepository {
-  async findAllTasksInYear(
+  async findAllTasks(
     userId: string,
     filter: DateRangeFilter,
   ): Promise<TaskEntity[]> {
