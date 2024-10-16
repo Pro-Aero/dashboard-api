@@ -42,6 +42,7 @@ export class UserRepository {
   }
 
   async remove(userId: string): Promise<void> {
+    await prisma.assignment.deleteMany({ where: { userId } });
     await prisma.user.delete({ where: { id: userId } });
   }
 

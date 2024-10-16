@@ -159,6 +159,7 @@ export class TaskRepository {
   }
 
   async remove(taskId: string): Promise<void> {
+    await prisma.assignment.deleteMany({ where: { taskId } });
     await prisma.task.delete({ where: { id: taskId } });
   }
 
