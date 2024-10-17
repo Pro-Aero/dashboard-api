@@ -3,8 +3,8 @@ import { BucketsMapper } from '../mappers/bucket.mapper';
 import { BucketEntity } from '../models/bucket.entity';
 
 export class BucketRepository {
-  async upsert(user: BucketEntity): Promise<void> {
-    const data = BucketsMapper.entityToModel(user);
+  async upsert(bucket: BucketEntity): Promise<void> {
+    const data = BucketsMapper.entityToModel(bucket);
 
     await prisma.bucket.upsert({
       where: { id: data.id },
@@ -18,7 +18,8 @@ export class BucketRepository {
     return buckets.map(BucketsMapper.modelToEntity);
   }
 
-  async remove(userId: string): Promise<void> {
-    await prisma.bucket.delete({ where: { id: userId } });
+  async remove(bucketId: string): Promise<void> {
+    const bucket = await prisma.bucket.findUnique({ where: { id: bucketId } });
+    if (bucket) await prisma.bucket.delete({ where: { id: bucketId } });
   }
 }

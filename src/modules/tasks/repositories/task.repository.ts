@@ -159,8 +159,8 @@ export class TaskRepository {
   }
 
   async remove(taskId: string): Promise<void> {
-    await prisma.assignment.deleteMany({ where: { taskId } });
-    await prisma.task.delete({ where: { id: taskId } });
+    const task = await prisma.task.findUnique({ where: { id: taskId } });
+    if (task) await prisma.task.delete({ where: { id: taskId } });
   }
 
   async countTasksByPriority(userId: string): Promise<number[]> {

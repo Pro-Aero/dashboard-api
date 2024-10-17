@@ -31,8 +31,8 @@ export class GroupRepository {
     return GroupMapper.modelToEntity(group);
   }
 
-  async upsert(user: GroupEntity): Promise<void> {
-    const data = GroupMapper.entityToModel(user);
+  async upsert(group: GroupEntity): Promise<void> {
+    const data = GroupMapper.entityToModel(group);
 
     await prisma.group.upsert({
       where: { id: data.id },
@@ -41,7 +41,8 @@ export class GroupRepository {
     });
   }
 
-  async remove(userId: string): Promise<void> {
-    await prisma.user.delete({ where: { id: userId } });
+  async remove(groupId: string): Promise<void> {
+    const group = await prisma.group.findUnique({ where: { id: groupId } });
+    if (group) await prisma.group.delete({ where: { id: groupId } });
   }
 }

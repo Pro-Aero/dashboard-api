@@ -19,7 +19,11 @@ export class AssignmentRepository {
   }
 
   async remove(assignmentId: string): Promise<void> {
-    await prisma.assignment.delete({ where: { id: assignmentId } });
+    const assignment = await prisma.assignment.findUnique({
+      where: { id: assignmentId },
+    });
+    if (assignment)
+      await prisma.assignment.delete({ where: { id: assignmentId } });
   }
 
   async exists(taskId: string, userId: string): Promise<boolean> {

@@ -42,8 +42,8 @@ export class UserRepository {
   }
 
   async remove(userId: string): Promise<void> {
-    await prisma.assignment.deleteMany({ where: { userId } });
-    await prisma.user.delete({ where: { id: userId } });
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user) await prisma.user.delete({ where: { id: userId } });
   }
 
   async calculateBusyHours(userId: string): Promise<number> {

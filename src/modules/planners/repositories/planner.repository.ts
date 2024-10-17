@@ -68,8 +68,11 @@ export class PlannerRepository {
     return PlannersMapper.modelToEntity(updatedPlanner);
   }
 
-  async remove(userId: string): Promise<void> {
-    await prisma.planner.delete({ where: { id: userId } });
+  async remove(plannerId: string): Promise<void> {
+    const planner = await prisma.planner.findUnique({
+      where: { id: plannerId },
+    });
+    if (planner) await prisma.planner.delete({ where: { id: plannerId } });
   }
 
   async calculateTotalHours(plannerId: string): Promise<number> {
