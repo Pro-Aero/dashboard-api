@@ -4,12 +4,13 @@ import { AssignmentsModule } from './modules/assignments/assignments.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BucketsModule } from './modules/buckets/buckets.module';
 import { EnvModule } from './modules/env/env.module';
+import { GraphsModule } from './modules/graphs/graphs.module';
 import { GroupsModule } from './modules/groups/groups.module';
+import { HealthModule } from './modules/health/health.module';
 import { PlannersModule } from './modules/planners/planners.module';
 import { SyncModule } from './modules/sync/sync.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
-import { GraphsModule } from './modules/graphs/graphs.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { GraphsModule } from './modules/graphs/graphs.module';
     AssignmentsModule,
     AuthModule,
     GraphsModule,
+    HealthModule,
   ],
   controllers: [],
   providers: [],

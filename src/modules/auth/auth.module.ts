@@ -10,6 +10,6 @@ import { AuthService } from './auth.service';
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('*');
+    consumer.apply(AuthMiddleware).exclude('/health').forRoutes('*');
   }
 }
