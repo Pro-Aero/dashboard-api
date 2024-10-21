@@ -12,8 +12,6 @@ export type TasksPerDay = {
   totalHours: number;
   tasks: TaskDay[];
   isWeekend: boolean;
-  availableHours?: number;
-  workedHours?: number;
 };
 
 export type TaskDay = {

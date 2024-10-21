@@ -154,11 +154,14 @@ export class GraphsService {
         }
         if (totalWeekHours > 0) {
           mergedTasksPerDay.set(date.toISODate(), {
+            totalHours: MAX_WORKED_HOURS_PER_WEEK - totalWeekHours,
+            tasks: totalWeekTasks,
+            isWeekend: true,
+          });
+          mergedTasksPerDay.set(date.plus({ days: 1 }).toISODate(), {
             totalHours: totalWeekHours,
             tasks: totalWeekTasks,
             isWeekend: true,
-            availableHours: MAX_WORKED_HOURS_PER_WEEK - totalWeekHours,
-            workedHours: totalWeekHours,
           });
         }
       }
