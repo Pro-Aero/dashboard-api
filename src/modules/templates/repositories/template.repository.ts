@@ -22,4 +22,22 @@ export class TemplateRepository {
 
     return TemplateMapper.modelToEntity(taskCreated);
   }
+
+  async findAll(): Promise<TemplateEntity[]> {
+    const templates = await prisma.template.findMany({
+      include: { tasks: true },
+    });
+    return templates.map(TemplateMapper.modelToEntity);
+  }
+
+  async findById(templateId: string): Promise<TemplateEntity> {
+    const template = await prisma.template.findUnique({
+      where: { id: templateId },
+      include: { tasks: true },
+    });
+
+    if (!template) null;
+
+    return TemplateMapper.modelToEntity(template);
+  }
 }

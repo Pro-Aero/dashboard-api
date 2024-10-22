@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { TaskTemplateMapper } from './mappers/task-template.mapper';
+import { TemplateMapper } from './mappers/templates.mapper';
 import { CreateTemplateDTO, TemplateDTO } from './models/templates.dto';
 import { TemplateEntity } from './models/templates.entity';
 import { TemplateRepository } from './repositories/template.repository';
@@ -27,5 +28,21 @@ export class TemplatesService {
     const templateCreated = await this.templateRepository.create(entity);
 
     return templateCreated;
+  }
+
+  async findAll(): Promise<TemplateDTO[]> {
+    const templates = await this.templateRepository.findAll();
+
+    return templates.map(TemplateMapper.entityToDTO);
+  }
+
+  async findById(templateId: string): Promise<TemplateDTO> {
+    const template = await this.templateRepository.findById(templateId);
+
+    if (!template) {
+      throw Error();
+    }
+
+    return TemplateMapper.entityToDTO(template);
   }
 }
