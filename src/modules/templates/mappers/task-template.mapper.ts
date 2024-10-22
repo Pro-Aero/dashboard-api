@@ -1,4 +1,4 @@
-import { TaskTemplate } from '@prisma/client';
+import { Prisma, TaskTemplate } from '@prisma/client';
 import {
   CreateTaskTemplateDTO,
   TaskTemplateDTO,
@@ -18,9 +18,23 @@ export class TaskTemplateMapper {
     return entity;
   }
 
-  static entityToModel(entity: TaskTemplateEntity) {
+  static entityToCreateModel(entity: TaskTemplateEntity) {
     const model = {
       id: entity.id,
+      title: entity.title,
+      priority: entity.priority,
+      hours: entity.hours,
+    };
+
+    return model;
+  }
+
+  static entityToModel(
+    entity: TaskTemplateEntity,
+  ): Prisma.TaskTemplateCreateInput {
+    const model: Prisma.TaskTemplateCreateInput = {
+      id: entity.id,
+      template: { connect: { id: entity.templateId } },
       title: entity.title,
       priority: entity.priority,
       hours: entity.hours,

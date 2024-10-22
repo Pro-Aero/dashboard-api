@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { TaskTemplateMapper } from './mappers/task-template.mapper';
 import { TemplateMapper } from './mappers/templates.mapper';
-import { CreateTemplateDTO, TemplateDTO } from './models/templates.dto';
+import {
+  CreateTemplateDTO,
+  TemplateDTO,
+  UpdateTemplateDTO,
+} from './models/templates.dto';
 import { TemplateEntity } from './models/templates.entity';
 import { TemplateRepository } from './repositories/template.repository';
 
@@ -44,5 +48,46 @@ export class TemplatesService {
     }
 
     return TemplateMapper.entityToDTO(template);
+  }
+
+  async update(
+    templateId: string,
+    dto: UpdateTemplateDTO,
+  ): Promise<TemplateDTO> {
+    const template = await this.templateRepository.findById(templateId);
+
+    if (!template) {
+      throw Error();
+    }
+
+    if (dto.tasks) {
+      await this.templateRepository.removeAllTasks(template.id);
+
+      const tasks = dto.tasks.map((task) =>
+        TaskTemplateMapper.createDTOToEntity(
+          task,
+          crypto.randomUUID(),
+          templateId,
+        ),
+      );
+
+      await this.templateRepository.createTasks(tasks);
+    }
+
+    const templateUpdate = await this.templateRepository.update(template.id, {
+      title: dto.title,
+    });
+
+    return TemplateMapper.entityToDTO(templateUpdate);
+  }
+
+  async remove(templateId: string): Promise<void> {
+    const template = await this.templateRepository.findById(templateId);
+
+    if (!template) {
+      throw Error();
+    }
+
+    await this.templateRepository.remove(template.id);
   }
 }

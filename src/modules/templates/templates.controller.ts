@@ -1,13 +1,19 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
 } from '@nestjs/common';
-import { CreateTemplateDTO, TemplateDTO } from './models/templates.dto';
+import {
+  CreateTemplateDTO,
+  TemplateDTO,
+  UpdateTemplateDTO,
+} from './models/templates.dto';
 import { TemplatesService } from './templates.service';
 
 @Controller('templates')
@@ -32,5 +38,20 @@ export class TemplatesController {
     @Param('templateId') templateId: string,
   ): Promise<TemplateDTO> {
     return await this.templatesService.findById(templateId);
+  }
+
+  @Patch(':templateId')
+  @HttpCode(HttpStatus.OK)
+  async update(
+    @Param('templateId') templateId: string,
+    @Body() body: UpdateTemplateDTO,
+  ): Promise<TemplateDTO> {
+    return await this.templatesService.update(templateId, body);
+  }
+
+  @Delete(':templateId')
+  @HttpCode(HttpStatus.OK)
+  async remove(@Param('templateId') templateId: string): Promise<void> {
+    return await this.templatesService.remove(templateId);
   }
 }

@@ -3,6 +3,7 @@ import {
   IsArray,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -31,6 +32,18 @@ export class CreateTaskTemplateDTO {
   @IsNotEmpty()
   @IsNumber()
   hours: number;
+}
+
+export class UpdateTemplateDTO {
+  @IsOptional()
+  @IsString()
+  title: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateTaskTemplateDTO)
+  tasks: CreateTaskTemplateDTO[];
 }
 
 export type TemplateDTO = {
