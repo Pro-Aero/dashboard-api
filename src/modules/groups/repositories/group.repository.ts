@@ -2,7 +2,8 @@ import { prisma } from 'src/config/prisma-client';
 import { GroupMapper } from '../mappers/group.mapper';
 import { GroupFilter } from '../models/group.dto';
 import { GroupEntity } from '../models/group.entity';
-
+import { Injectable } from '@nestjs/common';
+@Injectable()
 export class GroupRepository {
   async findAll(filter?: GroupFilter): Promise<GroupEntity[]> {
     const groups = await prisma.group.findMany({

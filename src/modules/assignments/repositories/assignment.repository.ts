@@ -1,7 +1,9 @@
 import { prisma } from 'src/config/prisma-client';
 import { AssignmentsMapper } from '../mappers/assignment.mapper';
 import { AssignmentEntity } from '../models/assignment.entity';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class AssignmentRepository {
   async upsert(assignment: AssignmentEntity): Promise<void> {
     const data = AssignmentsMapper.entityToModel(assignment);

@@ -89,3 +89,23 @@ model Bucket {
 
   @@map("buckets")
 }
+
+model Template {
+  id    String         @id
+  title String
+  tasks TaskTemplate[]
+
+  @@map("templates")
+}
+
+model TaskTemplate {
+  id         String @id
+  templateId String
+  title      String
+  priority   Int
+  hours      Int
+
+  template Template @relation(fields: [templateId], references: [id])
+
+  @@map("task_templates")
+}

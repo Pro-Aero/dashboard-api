@@ -2,7 +2,9 @@ import { prisma } from 'src/config/prisma-client';
 import { UsersMapper } from '../mappers/user.mapper';
 import { UserFilter } from '../models/user.dto';
 import { UserEntity } from '../models/user.entity';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class UserRepository {
   async findAll(filter?: UserFilter): Promise<UserEntity[]> {
     const users = await prisma.user.findMany({

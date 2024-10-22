@@ -2,7 +2,8 @@ import { prisma } from 'src/config/prisma-client';
 import { PlannersMapper } from '../mappers/planner.mapper';
 import { PlannerFilter } from '../models/planner.dto';
 import { PlannerEntity } from '../models/planner.entity';
-
+import { Injectable } from '@nestjs/common';
+@Injectable()
 export class PlannerRepository {
   async findAll(filter?: PlannerFilter): Promise<PlannerEntity[]> {
     const planners = await prisma.planner.findMany({

@@ -5,7 +5,8 @@ import { PaginatedItems } from 'src/types/pagination-query';
 import { TasksMapper } from '../mappers/task.mapper';
 import { TaskFilter } from '../models/task.dto';
 import { TaskEntity } from '../models/task.entity';
-
+import { Injectable } from '@nestjs/common';
+@Injectable()
 export class TaskRepository {
   async findAll(): Promise<TaskEntity[]> {
     const tasks = await prisma.task.findMany();

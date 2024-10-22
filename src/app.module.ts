@@ -11,6 +11,7 @@ import { PlannersModule } from './modules/planners/planners.module';
 import { SyncModule } from './modules/sync/sync.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { UsersModule } from './modules/users/users.module';
+import { TemplatesModule } from './modules/templates/templates.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UsersModule } from './modules/users/users.module';
     AuthModule,
     GraphsModule,
     HealthModule,
+    TemplatesModule,
   ],
   controllers: [],
   providers: [],

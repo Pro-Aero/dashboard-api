@@ -1,7 +1,9 @@
 import { prisma } from 'src/config/prisma-client';
 import { BucketsMapper } from '../mappers/bucket.mapper';
 import { BucketEntity } from '../models/bucket.entity';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class BucketRepository {
   async upsert(bucket: BucketEntity): Promise<void> {
     const data = BucketsMapper.entityToModel(bucket);
