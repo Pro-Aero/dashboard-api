@@ -32,7 +32,7 @@ jobs:
           docker tag dashboard-api ${{ vars.IMAGE_HOST }}:production
           docker push ${{ vars.IMAGE_HOST }}:production
 
-      - name: Update production server
+      - name: Update staging server
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.SSH_PRODUCTION_KEY }}" > ~/.ssh/id_rsa
