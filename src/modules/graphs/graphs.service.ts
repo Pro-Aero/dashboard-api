@@ -209,7 +209,6 @@ export class GraphsService {
         } else if (mergedHours !== MAX_WORKED_HOURS_PER_DAY) {
           task.totalHours -= MAX_WORKED_HOURS_PER_DAY - mergedHours;
           task.tasks[0].hours = MAX_WORKED_HOURS_PER_DAY - mergedHours;
-          console.log(MAX_WORKED_HOURS_PER_DAY - mergedHours);
           mergedHours = MAX_WORKED_HOURS_PER_DAY;
           mergedTasks = mergedTasks.concat(task.tasks);
 

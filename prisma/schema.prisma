@@ -52,7 +52,7 @@ model Planner {
 model Task {
   id                String       @id
   plannerId         String       @map("planner_id")
-  bucketId          String       @map("bucket_id")
+  bucketId          String?      @map("bucket_id")
   title             String
   percentComplete   Int          @map("percent_complete")
   priority          Int
@@ -63,7 +63,7 @@ model Task {
   assignments       Assignment[]
 
   planner Planner @relation(fields: [plannerId], references: [id], onDelete: Cascade)
-  bucket  Bucket  @relation(fields: [bucketId], references: [id], onDelete: Cascade)
+  bucket  Bucket? @relation(fields: [bucketId], references: [id], onDelete: Cascade)
 
   @@map("tasks")
 }

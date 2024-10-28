@@ -70,7 +70,9 @@ export class TasksMapper {
     return {
       id: entity.id,
       planner: { connect: { id: entity.planner.id } },
-      bucket: { connect: { id: entity.bucketId } },
+      bucket: entity.bucketId
+        ? { connect: { id: entity.bucketId } }
+        : undefined,
       title: entity.title,
       percentComplete: entity.percentComplete,
       priority: entity.priority,

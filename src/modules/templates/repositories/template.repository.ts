@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { prisma } from 'src/config/prisma-client';
+import { SyncTasksService } from 'src/modules/sync/services/sync-tasks.service';
 import { TaskTemplateMapper } from '../mappers/task-template.mapper';
 import { TemplateMapper } from '../mappers/templates.mapper';
 import { TaskTemplateEntity, TemplateEntity } from '../models/templates.entity';
 
 @Injectable()
 export class TemplateRepository {
+  constructor(private readonly syncTasksService: SyncTasksService) {}
+
   async create(entity: TemplateEntity): Promise<TemplateEntity> {
     const template = TemplateMapper.entityToModel(entity);
     const tasks = entity.tasks.map(TaskTemplateMapper.entityToCreateModel);
@@ -23,7 +26,7 @@ export class TemplateRepository {
     return TemplateMapper.modelToEntity(taskCreated);
   }
 
-  async createTasks(entities: TaskTemplateEntity[]): Promise<void> {
+  async createTasksTemplate(entities: TaskTemplateEntity[]): Promise<void> {
     const tasks = entities.map(TaskTemplateMapper.entityToModel);
 
     for (const task of tasks) {
@@ -31,6 +34,24 @@ export class TemplateRepository {
         data: task,
       });
     }
+  }
+
+  async createTasks(
+    template: TemplateEntity,
+    plannerId: string,
+    assignments: Record<string, string>,
+  ): Promise<void> {
+    const results = template.tasks.map(async (task) => {
+      task.title += ` - ${task.hours}`;
+      const assignmentUserId = assignments[task.id];
+      await this.syncTasksService.createTask({
+        ...task,
+        plannerId,
+        assignmentUserId,
+      });
+    });
+
+    await Promise.all(results);
   }
 
   async findAll(): Promise<TemplateEntity[]> {
@@ -46,7 +67,7 @@ export class TemplateRepository {
       include: { tasks: true },
     });
 
-    if (!template) null;
+    if (!template) return null;
 
     return TemplateMapper.modelToEntity(template);
   }

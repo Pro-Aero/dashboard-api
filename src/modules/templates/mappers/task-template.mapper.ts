@@ -45,6 +45,7 @@ export class TaskTemplateMapper {
 
   static entityToDTO(entity: TaskTemplateEntity): TaskTemplateDTO {
     const dto: TaskTemplateDTO = {
+      id: entity.id,
       title: entity.title,
       priority: entity.priority,
       hours: entity.hours,

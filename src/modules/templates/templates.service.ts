@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { TaskTemplateMapper } from './mappers/task-template.mapper';
 import { TemplateMapper } from './mappers/templates.mapper';
 import {
   CreateTemplateDTO,
+  ExecuteTemplateDTO,
   TemplateDTO,
   UpdateTemplateDTO,
 } from './models/templates.dto';
@@ -34,6 +35,24 @@ export class TemplatesService {
     return templateCreated;
   }
 
+  async execute(
+    templateId: string,
+    plannerId: string,
+    dto: ExecuteTemplateDTO,
+  ): Promise<void> {
+    const template = await this.templateRepository.findById(templateId);
+
+    if (!template) {
+      throw new NotFoundException();
+    }
+
+    await this.templateRepository.createTasks(
+      template,
+      plannerId,
+      dto.assignments,
+    );
+  }
+
   async findAll(): Promise<TemplateDTO[]> {
     const templates = await this.templateRepository.findAll();
 
@@ -44,7 +63,7 @@ export class TemplatesService {
     const template = await this.templateRepository.findById(templateId);
 
     if (!template) {
-      throw Error();
+      throw new NotFoundException();
     }
 
     return TemplateMapper.entityToDTO(template);
@@ -57,7 +76,7 @@ export class TemplatesService {
     const template = await this.templateRepository.findById(templateId);
 
     if (!template) {
-      throw Error();
+      throw new NotFoundException();
     }
 
     if (dto.tasks) {
@@ -71,7 +90,7 @@ export class TemplatesService {
         ),
       );
 
-      await this.templateRepository.createTasks(tasks);
+      await this.templateRepository.createTasksTemplate(tasks);
     }
 
     const templateUpdate = await this.templateRepository.update(template.id, {
@@ -85,7 +104,7 @@ export class TemplatesService {
     const template = await this.templateRepository.findById(templateId);
 
     if (!template) {
-      throw Error();
+      throw new NotFoundException();
     }
 
     await this.templateRepository.remove(template.id);

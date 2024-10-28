@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import {
   CreateTemplateDTO,
+  ExecuteTemplateDTO,
   TemplateDTO,
   UpdateTemplateDTO,
 } from './models/templates.dto';
@@ -24,6 +25,16 @@ export class TemplatesController {
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() body: CreateTemplateDTO): Promise<TemplateDTO> {
     return await this.templatesService.create(body);
+  }
+
+  @Post(':templateId/planners/:plannerId/execute')
+  @HttpCode(HttpStatus.OK)
+  async execute(
+    @Param('templateId') templateId: string,
+    @Param('plannerId') plannerId: string,
+    @Body() body: ExecuteTemplateDTO,
+  ): Promise<void> {
+    return await this.templatesService.execute(templateId, plannerId, body);
   }
 
   @Get()

@@ -12,8 +12,8 @@ import { SyncGroupsService } from './services/sync-groups.service.js';
 import { SyncPlannersService } from './services/sync-planners.service.js';
 import { SyncTasksService } from './services/sync-tasks.service.js';
 import { SyncUsersService } from './services/sync-users.service.js';
-import { SyncCron } from './sync.cron.js';
 import { SyncController } from './sync.controller.js';
+import { SyncCron } from './sync.cron.js';
 
 @Module({
   imports: [
@@ -35,5 +35,6 @@ import { SyncController } from './sync.controller.js';
     SyncBucketsService,
     SyncTasksService,
   ],
+  exports: [SyncTasksService],
 })
 export class SyncModule {}

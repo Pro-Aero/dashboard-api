@@ -32,8 +32,12 @@ export class TasksService {
       filter,
     );
 
-    tasks.data = tasks.data.map(TasksMapper.entityToDTO);
-    return tasks;
+    const dto: PaginatedItems<TaskDto> = {
+      data: tasks.data.map(TasksMapper.entityToDTO),
+      pagination: tasks.pagination,
+    };
+
+    return dto;
   }
 
   async findAllByUserWithPagination(
@@ -49,8 +53,12 @@ export class TasksService {
       filter,
     );
 
-    tasks.data = tasks.data.map(TasksMapper.entityToDTO);
-    return tasks;
+    const dto: PaginatedItems<TaskDto> = {
+      data: tasks.data.map(TasksMapper.entityToDTO),
+      pagination: tasks.pagination,
+    };
+
+    return dto;
   }
 
   async findAllWithPagination(
@@ -64,8 +72,12 @@ export class TasksService {
       filter,
     );
 
-    tasks.data = tasks.data.map(TasksMapper.entityToDTO);
-    return tasks;
+    const dto: PaginatedItems<TaskDto> = {
+      data: tasks.data.map(TasksMapper.entityToDTO),
+      pagination: tasks.pagination,
+    };
+
+    return dto;
   }
 
   async findById(taskId: string): Promise<TaskDto> {

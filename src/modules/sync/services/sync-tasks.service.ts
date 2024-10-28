@@ -1,6 +1,7 @@
 import { Client } from '@microsoft/microsoft-graph-client';
 import { Injectable } from '@nestjs/common';
 import { AssignmentsService } from 'src/modules/assignments/assignments.service';
+import { CreateAssignmentDto } from 'src/modules/assignments/models/assignment.dto';
 import { PlannersService } from 'src/modules/planners/planners.service';
 import { TasksMapper } from 'src/modules/tasks/mappers/task.mapper';
 import {
@@ -72,5 +73,43 @@ export class SyncTasksService {
       .get();
 
     return value.map(TasksMapper.apiToEntity);
+  }
+
+  async createTask({ plannerId, title, priority, hours, assignmentUserId }) {
+    const taskData = {
+      planId: plannerId,
+      title,
+      priority,
+      assignments: {
+        [assignmentUserId]: {
+          '@odata.type': '#microsoft.graph.plannerAssignment',
+          orderHint: ' !',
+        },
+      },
+    };
+
+    const response: TaskApiResponse = await this.client
+      .api('/planner/tasks')
+      .post(taskData);
+
+    console.log(response);
+
+    const task: TaskEntity = {
+      id: response.id,
+      title: response.title,
+      percentComplete: response.percentComplete,
+      priority: response.priority,
+      hours: hours,
+      planner: { id: response.planId },
+      assignments: [{ id: assignmentUserId }],
+    };
+
+    const assignment: CreateAssignmentDto = {
+      taskId: task.id,
+      userId: assignmentUserId,
+    };
+
+    await this.tasksService.upsert(task);
+    await this.assignmentsService.upsert(assignment);
   }
 }

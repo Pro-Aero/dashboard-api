@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { prisma } from 'src/config/prisma-client';
 import { makePagination } from 'src/helpers/makePagination';
@@ -5,7 +6,6 @@ import { PaginatedItems } from 'src/types/pagination-query';
 import { TasksMapper } from '../mappers/task.mapper';
 import { TaskFilter } from '../models/task.dto';
 import { TaskEntity } from '../models/task.entity';
-import { Injectable } from '@nestjs/common';
 @Injectable()
 export class TaskRepository {
   async findAll(): Promise<TaskEntity[]> {

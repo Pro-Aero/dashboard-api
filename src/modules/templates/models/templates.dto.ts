@@ -2,7 +2,9 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsNotEmpty,
+  IsNotEmptyObject,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   ValidateNested,
@@ -46,6 +48,13 @@ export class UpdateTemplateDTO {
   tasks: CreateTaskTemplateDTO[];
 }
 
+export class ExecuteTemplateDTO {
+  @IsNotEmpty()
+  @IsObject()
+  @IsNotEmptyObject()
+  assignments: Record<string, string>;
+}
+
 export type TemplateDTO = {
   id: string;
   title: string;
@@ -53,6 +62,7 @@ export type TemplateDTO = {
 };
 
 export type TaskTemplateDTO = {
+  id: string;
   title: string;
   priority: number;
   hours: number;

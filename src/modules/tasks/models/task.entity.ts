@@ -1,7 +1,7 @@
 export type TaskEntity = {
   id: string;
   plannerId?: string;
-  bucketId: string;
+  bucketId?: string;
   title: string;
   percentComplete: number;
   priority: number;
