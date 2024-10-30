@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -40,6 +40,11 @@ export class TaskFilter {
   priority: number;
 
   @IsOptional()
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  notComplete: boolean;
+
+  @IsOptional()
   @IsEnum(TaskStatus)
   status: TaskStatus;
 
@@ -62,6 +67,11 @@ export class PaginationQueryWithTaskFilter extends PaginationQuery {
   @Type(() => Number)
   @IsNumber()
   priority: number;
+
+  @IsOptional()
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  notComplete: boolean;
 
   @IsOptional()
   @IsEnum(TaskStatus)

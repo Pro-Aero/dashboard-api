@@ -107,11 +107,7 @@ export class TasksService {
   }
 
   extractHoursFromTitle(title: string): number {
-    const parts = title.split('-');
-    const lastPart = parts[parts.length - 1].trim();
-
-    const hour = Number(lastPart);
-
-    return isNaN(hour) ? null : hour;
+    const match = title.match(/\{\s*(\d+)\s*\}/);
+    return match ? parseInt(match[1], 10) : null;
   }
 }

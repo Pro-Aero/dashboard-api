@@ -185,12 +185,22 @@ export class TaskRepository {
   async buildTaskFilterCriteria(
     filter?: TaskFilter,
   ): Promise<Prisma.TaskWhereInput> {
+    let percentComplete;
+
+    console.log(filter);
+
+    if (filter?.notComplete) {
+      percentComplete = { not: 100 };
+    } else if (filter?.percentComplete) {
+      percentComplete = filter.percentComplete;
+    }
+
     const where: Prisma.TaskWhereInput = {
       title: filter?.title
-        ? { contains: filter?.title, mode: 'insensitive' }
+        ? { contains: filter.title, mode: 'insensitive' }
         : undefined,
-      percentComplete: filter?.percentComplete ?? undefined,
       priority: filter?.priority ?? undefined,
+      ...(percentComplete !== undefined && { percentComplete }),
     };
 
     return where;
