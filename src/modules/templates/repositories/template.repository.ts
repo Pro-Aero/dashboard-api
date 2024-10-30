@@ -42,7 +42,7 @@ export class TemplateRepository {
     assignments: Record<string, string>,
   ): Promise<void> {
     const results = template.tasks.map(async (task) => {
-      task.title += ` - ${task.hours}`;
+      task.title += ` {${task.hours}}`;
       const assignmentUserId = assignments[task.id];
       await this.syncTasksService.createTask({
         ...task,
