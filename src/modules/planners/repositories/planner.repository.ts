@@ -1,8 +1,8 @@
+import { Injectable } from '@nestjs/common';
 import { prisma } from 'src/config/prisma-client';
 import { PlannersMapper } from '../mappers/planner.mapper';
 import { PlannerFilter } from '../models/planner.dto';
 import { PlannerEntity } from '../models/planner.entity';
-import { Injectable } from '@nestjs/common';
 @Injectable()
 export class PlannerRepository {
   async findAll(filter?: PlannerFilter): Promise<PlannerEntity[]> {
@@ -80,7 +80,7 @@ export class PlannerRepository {
     const result = await prisma.task.aggregate({
       where: {
         plannerId,
-        NOT: { hours: null },
+        NOT: { hours: null, percentComplete: 100 },
       },
       _sum: { hours: true },
     });

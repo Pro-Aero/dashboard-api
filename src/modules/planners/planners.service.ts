@@ -52,9 +52,9 @@ export class PlannersService {
     );
   }
 
-  async calculateTotalHours(planner: PlannerEntity): Promise<PlannerEntity> {
+  async calculateTotalHours(planner: PlannerEntity): Promise<void> {
     const totalHours = await this.repository.calculateTotalHours(planner.id);
     planner.totalHours = totalHours;
-    return planner;
+    await this.repository.update(planner.id, planner);
   }
 }

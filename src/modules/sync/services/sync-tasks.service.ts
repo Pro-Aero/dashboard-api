@@ -56,7 +56,7 @@ export class SyncTasksService {
 
     await this.tasksService.removeOutdated(allTasks);
 
-    Promise.all(
+    await Promise.all(
       planners.map(
         async (planner) =>
           await this.plannersService.calculateTotalHours(planner),
