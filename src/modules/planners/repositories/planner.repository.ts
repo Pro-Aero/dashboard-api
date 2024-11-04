@@ -80,7 +80,7 @@ export class PlannerRepository {
     const result = await prisma.task.aggregate({
       where: {
         plannerId,
-        NOT: { hours: null, percentComplete: 100 },
+        NOT: { OR: [{ hours: null }, { percentComplete: 100 }] },
       },
       _sum: { hours: true },
     });
