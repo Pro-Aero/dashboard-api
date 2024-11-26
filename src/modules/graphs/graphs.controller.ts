@@ -11,6 +11,11 @@ export class GraphsController {
     return await this.graphsService.calculateTeamWorkedHours(filter);
   }
 
+  @Get('users/:userId/availability/week')
+  async calculateWeekAvailable(@Param('userId') userId: string) {
+    return await this.graphsService.calculateWeekAvailable(userId);
+  }
+
   @Get('tasks/user/:userId')
   async calculateTasksAndWorkedHours(
     @Param('userId') userId: string,

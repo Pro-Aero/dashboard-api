@@ -39,6 +39,25 @@ export class GraphsService {
     return Promise.all(result);
   }
 
+  async calculateWeekAvailable(userId: string): Promise<TeamWorkedHoursDto> {
+    const user = await this.usersService.findById(userId);
+
+    const now = DateTime.local();
+
+    const filter: DateRangeFilter = {
+      startDate: now.startOf('week').plus({ days: 1 }).toJSDate(),
+      endDate: now.endOf('week').toJSDate(),
+    };
+
+    const days = await this.calculateWorkedHours(user.id, filter);
+
+    return {
+      userId: user.id,
+      userName: user.displayName,
+      tasksPerDays: days,
+    };
+  }
+
   async calculateWorkedHours(
     userId: string,
     filter: DateRangeFilter,
