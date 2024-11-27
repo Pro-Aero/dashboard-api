@@ -47,9 +47,6 @@ export class SyncUsersService {
       'priscila.sampaio@proaero.aero',
       'TI@proaero.aero',
       'ctm@proaero.aero',
-      'joao.priante@proaero.aero',
-      'pedro@flyaxis.aero',
-      'rodrigo@flyaxis.aero',
     ]);
 
     return users.filter((user) =>
