@@ -1,8 +1,8 @@
+import { Injectable } from '@nestjs/common';
 import { prisma } from 'src/config/prisma-client';
 import { UsersMapper } from '../mappers/user.mapper';
 import { UserFilter } from '../models/user.dto';
 import { UserEntity } from '../models/user.entity';
-import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UserRepository {
@@ -18,7 +18,15 @@ export class UserRepository {
       },
     });
 
-    return users.map(UsersMapper.modelToEntity);
+    const usersFilter = [
+      'joao.priante@proaero.aero',
+      'pedro@flyaxis.aero',
+      'rodrigo@flyaxis.aero',
+    ];
+
+    return users
+      .filter((user) => !usersFilter.includes(user.mail))
+      .map(UsersMapper.modelToEntity);
   }
 
   async findById(userId: string): Promise<UserEntity> {
