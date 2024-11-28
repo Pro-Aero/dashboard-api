@@ -1,6 +1,7 @@
 import { Prisma, Task } from '@prisma/client';
 import { TaskDto } from '../models/task.dto';
 import { TaskApiResponse, TaskEntity, TaskStatus } from '../models/task.entity';
+import { DateTime } from 'luxon';
 export class TasksMapper {
   static modelToEntity(
     raw: Prisma.TaskGetPayload<{
@@ -132,20 +133,31 @@ export class TasksMapper {
     dueDateTime?: Date,
     completedDateTime?: Date,
   ): TaskStatus {
+    const now = DateTime.now();
+
     if (completedDateTime) {
       return TaskStatus.Completed;
     }
 
-    if (startDateTime && new Date() <= startDateTime) {
+    if (startDateTime && now <= DateTime.fromJSDate(startDateTime)) {
       return TaskStatus.NotStarted;
     }
 
-    if (dueDateTime && new Date() <= dueDateTime) {
-      return TaskStatus.InProgress;
-    }
+    if (dueDateTime) {
+      const dueDate = DateTime.fromJSDate(dueDateTime);
+      const daysToDue = dueDate.diff(now, 'days').days;
 
-    if (dueDateTime && new Date() > dueDateTime) {
-      return TaskStatus.Overdue;
+      if (daysToDue <= 7 && daysToDue > 0) {
+        return TaskStatus.NextOverdue;
+      }
+
+      if (now <= dueDate) {
+        return TaskStatus.InProgress;
+      }
+
+      if (now > dueDate) {
+        return TaskStatus.Overdue;
+      }
     }
 
     return null;

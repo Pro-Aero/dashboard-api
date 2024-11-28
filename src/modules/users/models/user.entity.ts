@@ -5,4 +5,11 @@ export type UserEntity = {
   mail?: string;
   jobTitle?: string;
   busyHours?: number;
+  show: boolean;
 };
+
+export const ShowUsersFilter = [
+  'joao.priante@proaero.aero',
+  'pedro@flyaxis.aero',
+  'rodrigo@flyaxis.aero',
+];

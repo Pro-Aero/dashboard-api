@@ -55,7 +55,7 @@ export class TaskRepository {
   ): Promise<PaginatedItems<TaskEntity>> {
     const where = {
       ...(await this.buildTaskFilterCriteria(filter)),
-      assignments: { some: { userId } },
+      assignments: { some: { userId, show: true } },
     };
 
     const [tasks, totalItems] = await Promise.all([

@@ -1,4 +1,5 @@
-import { IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export type UserDto = {
   id: string;
@@ -7,6 +8,7 @@ export type UserDto = {
   mail?: string;
   jobTitle?: string;
   busyHours?: number;
+  show: boolean;
 };
 
 export class UserFilter {
@@ -17,6 +19,11 @@ export class UserFilter {
   @IsOptional()
   @IsString()
   mail: string;
+
+  @IsOptional()
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  show: boolean;
 }
 
 export type UserTasksStatusDto = {

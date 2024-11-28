@@ -19,7 +19,7 @@ export class GraphsRepository {
 
     const tasks = await prisma.task.findMany({
       where: {
-        assignments: { some: { userId } },
+        assignments: { some: { user: { id: userId, show: true } } },
         startDateTime: { gte: startDate },
         dueDateTime: { lte: endDate },
         NOT: { AND: [{ hours: null }, { dueDateTime: null }] },

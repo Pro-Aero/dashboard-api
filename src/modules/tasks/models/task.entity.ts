@@ -28,6 +28,7 @@ export enum TaskStatus {
   NotStarted = 'NotStarted',
   InProgress = 'InProgress',
   Completed = 'Completed',
+  NextOverdue = 'NextOverdue',
   Overdue = 'Overdue',
 }
 

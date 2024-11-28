@@ -20,6 +20,7 @@ model User {
   userPrincipalName String       @map("user_principal_name")
   mail              String?
   jobTitle          String?      @map("job_title")
+  show              Boolean      @default(true)
   assignments       Assignment[]
 
   @@map("users")

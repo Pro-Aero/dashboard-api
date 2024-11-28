@@ -10,6 +10,7 @@ export class UsersMapper {
       userPrincipalName: raw.userPrincipalName,
       mail: raw.mail,
       jobTitle: raw.jobTitle,
+      show: raw.show,
     };
 
     return entity;
@@ -22,6 +23,7 @@ export class UsersMapper {
       userPrincipalName: entity.userPrincipalName,
       mail: entity.mail,
       jobTitle: entity.jobTitle,
+      show: entity.show,
     };
   }
 
@@ -33,6 +35,7 @@ export class UsersMapper {
       mail: entity.mail,
       jobTitle: entity.jobTitle,
       busyHours: entity.busyHours,
+      show: entity.show,
     };
   }
 }

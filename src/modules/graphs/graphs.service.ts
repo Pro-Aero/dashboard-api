@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import { TaskEntity } from '../tasks/models/task.entity';
+import { ShowUsersFilter } from '../users/models/user.entity';
 import { UsersService } from '../users/users.service';
 import {
   DateRangeFilter,
@@ -25,7 +26,8 @@ export class GraphsService {
   async calculateTeamWorkedHours(
     filter: DateRangeFilter,
   ): Promise<TeamWorkedHoursDto[]> {
-    const users = await this.usersService.findAll();
+    let users = await this.usersService.findAll();
+    users = users.filter((user) => !ShowUsersFilter.includes(user.mail));
 
     const result = users.map(async (user) => {
       const days = await this.calculateWorkedHours(user.id, filter);
