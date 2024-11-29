@@ -7,6 +7,7 @@ import {
   DateRangeFilter,
   TasksPerDayDto,
   TeamWorkedHoursDto,
+  UserWeekAvailableDto,
 } from './models/graphs.dto';
 import {
   MAX_WORKED_HOURS_PER_DAY,
@@ -41,7 +42,7 @@ export class GraphsService {
     return Promise.all(result);
   }
 
-  async calculateWeekAvailable(userId: string): Promise<TeamWorkedHoursDto> {
+  async calculateWeekAvailable(userId: string): Promise<UserWeekAvailableDto> {
     const user = await this.usersService.findById(userId);
 
     const now = DateTime.local();
@@ -53,10 +54,18 @@ export class GraphsService {
 
     const days = await this.calculateWorkedHours(user.id, filter);
 
+    const saturday = now
+      .endOf('week')
+      .minus({ days: 1 })
+      .toFormat('yyyy-MM-dd');
+    const sunday = now.endOf('week').toFormat('yyyy-MM-dd');
+
     return {
       userId: user.id,
       userName: user.displayName,
-      tasksPerDays: days,
+      workedHours: days[saturday].totalHours,
+      availableHours: days[sunday].totalHours,
+      maxWorkedHours: MAX_WORKED_HOURS_PER_WEEK,
     };
   }
 

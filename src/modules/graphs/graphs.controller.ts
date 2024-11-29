@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { GraphsService } from './graphs.service';
-import { DateRangeFilter } from './models/graphs.dto';
+import { DateRangeFilter, UserWeekAvailableDto } from './models/graphs.dto';
 
 @Controller('graphs')
 export class GraphsController {
@@ -12,7 +12,9 @@ export class GraphsController {
   }
 
   @Get('users/:userId/availability/week')
-  async calculateWeekAvailable(@Param('userId') userId: string) {
+  async calculateWeekAvailable(
+    @Param('userId') userId: string,
+  ): Promise<UserWeekAvailableDto> {
     return await this.graphsService.calculateWeekAvailable(userId);
   }
 
