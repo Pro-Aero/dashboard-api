@@ -15,7 +15,7 @@ export class UserRepository {
         mail: filter?.mail
           ? { contains: filter.mail, mode: 'insensitive' }
           : undefined,
-        show: filter.show,
+        show: filter?.show,
       },
     });
 
