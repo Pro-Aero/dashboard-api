@@ -129,24 +129,39 @@ export class TaskRepository {
     return TasksMapper.modelToEntity(task);
   }
 
-  async findMostPriority(): Promise<TaskEntity[]> {
-    const tasks = await prisma.task.findMany({
-      where: {
-        completedDateTime: null,
-        NOT: { dueDateTime: null, percentComplete: 100 },
-      },
-      orderBy: [{ dueDateTime: 'asc' }, { priority: 'desc' }],
-      include: {
-        planner: true,
-        assignments: {
-          include: {
-            user: true,
+  async findMostPriority(
+    page: number,
+    itemsPerPage: number,
+    filter?: TaskFilter,
+  ): Promise<PaginatedItems<TaskEntity>> {
+    const where = {
+      ...(await this.buildTaskFilterCriteria(filter)),
+      completedDateTime: null,
+      NOT: { dueDateTime: null, percentComplete: 100 },
+    };
+
+    const [tasks, totalItems] = await Promise.all([
+      prisma.task.findMany({
+        where,
+        orderBy: [{ dueDateTime: 'asc' }, { priority: 'desc' }],
+        take: itemsPerPage,
+        skip: (page - 1) * itemsPerPage,
+        include: {
+          planner: true,
+          assignments: {
+            include: {
+              user: true,
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.task.count({ where }),
+    ]);
 
-    return tasks.map(TasksMapper.modelToEntity);
+    return {
+      data: tasks.map((task) => TasksMapper.modelToEntity(task)),
+      pagination: makePagination(page, itemsPerPage, totalItems),
+    };
   }
 
   async upsert(task: TaskEntity): Promise<void> {
@@ -186,8 +201,6 @@ export class TaskRepository {
     filter?: TaskFilter,
   ): Promise<Prisma.TaskWhereInput> {
     let percentComplete;
-
-    console.log(filter);
 
     if (filter?.notComplete) {
       percentComplete = { not: 100 };

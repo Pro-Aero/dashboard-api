@@ -15,8 +15,10 @@ export class TasksController {
 
   @Get('priority')
   @HttpCode(HttpStatus.OK)
-  async findMostPriority() {
-    return await this.tasksService.findMostPriority();
+  async findMostPriority(@Query() query: PaginationQueryWithTaskFilter) {
+    const { page, itemsPerPage, ...filter } = query;
+
+    return await this.tasksService.findMostPriority(page, itemsPerPage, filter);
   }
 
   @Get(':taskId')

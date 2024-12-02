@@ -14,9 +14,28 @@ export class TasksService {
     return tasks.map(TasksMapper.entityToDTO);
   }
 
-  async findMostPriority(): Promise<TaskEntity[]> {
-    const tasks = await this.repository.findMostPriority();
-    return tasks.map(TasksMapper.entityToDTO);
+  async findMostPriority(
+    page: number,
+    itemsPerPage: number,
+    filter?: TaskFilter,
+  ): Promise<PaginatedItems<TaskDto>> {
+    const tasks = await this.repository.findMostPriority(
+      page,
+      itemsPerPage,
+      filter,
+    );
+
+    if (filter?.status) {
+      // TODO: fix pagination when filter this
+      tasks.data = tasks.data.filter((task) => task.status === filter.status);
+    }
+
+    const dto: PaginatedItems<TaskDto> = {
+      data: tasks.data.map(TasksMapper.entityToDTO),
+      pagination: tasks.pagination,
+    };
+
+    return dto;
   }
 
   async findAllByPlannerWithPagination(
