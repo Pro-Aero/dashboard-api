@@ -53,9 +53,9 @@ export class TaskRepository {
     itemsPerPage: number,
     filter?: TaskFilter,
   ): Promise<PaginatedItems<TaskEntity>> {
-    const where = {
+    const where: Prisma.TaskWhereInput = {
       ...(await this.buildTaskFilterCriteria(filter)),
-      assignments: { some: { userId, show: true } },
+      assignments: { some: { user: { id: userId, show: true } } },
     };
 
     const [tasks, totalItems] = await Promise.all([
