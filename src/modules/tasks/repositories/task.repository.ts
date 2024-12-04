@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { DateTime } from 'luxon';
 import { prisma } from 'src/config/prisma-client';
 import { makePagination } from 'src/helpers/makePagination';
 import { PaginatedItems } from 'src/types/pagination-query';
 import { TasksMapper } from '../mappers/task.mapper';
 import { TaskFilter } from '../models/task.dto';
-import { TaskEntity } from '../models/task.entity';
+import { TaskEntity, TaskStatus } from '../models/task.entity';
 @Injectable()
 export class TaskRepository {
   async findAll(): Promise<TaskEntity[]> {
@@ -140,6 +141,9 @@ export class TaskRepository {
       NOT: { dueDateTime: null, percentComplete: 100 },
     };
 
+    console.log(where);
+    console.log(where.OR);
+
     const [tasks, totalItems] = await Promise.all([
       prisma.task.findMany({
         where,
@@ -208,12 +212,54 @@ export class TaskRepository {
       percentComplete = filter.percentComplete;
     }
 
+    const statusFilters: Prisma.TaskWhereInput[] = [];
+
+    if (filter?.status?.includes(TaskStatus.Completed)) {
+      statusFilters.push({ completedDateTime: { not: null } });
+    }
+
+    if (filter?.status?.includes(TaskStatus.NotStarted)) {
+      const now = new Date();
+      statusFilters.push({
+        startDateTime: { not: null, gte: now },
+        completedDateTime: null,
+      });
+    }
+
+    if (filter?.status?.includes(TaskStatus.InProgress)) {
+      const now = new Date();
+      statusFilters.push({
+        dueDateTime: { not: null, gte: now },
+        startDateTime: { lte: now },
+        completedDateTime: null,
+      });
+    }
+
+    if (filter?.status?.includes(TaskStatus.NextOverdue)) {
+      const now = DateTime.now();
+      const oneWeekFromNow = now.plus({ days: 7 }).toJSDate();
+
+      statusFilters.push({
+        dueDateTime: { not: null, gte: now.toJSDate(), lte: oneWeekFromNow },
+        completedDateTime: null,
+      });
+    }
+
+    if (filter?.status?.includes(TaskStatus.Overdue)) {
+      const now = new Date();
+      statusFilters.push({
+        dueDateTime: { not: null, lt: now },
+        completedDateTime: null,
+      });
+    }
+
     const where: Prisma.TaskWhereInput = {
       title: filter?.title
         ? { contains: filter.title, mode: 'insensitive' }
         : undefined,
       priority: filter?.priority ?? undefined,
       ...(percentComplete !== undefined && { percentComplete }),
+      ...(statusFilters.length > 0 ? { OR: statusFilters } : {}),
     };
 
     return where;

@@ -25,11 +25,6 @@ export class TasksService {
       filter,
     );
 
-    if (filter?.status) {
-      // TODO: fix pagination when filter this
-      tasks.data = tasks.data.filter((task) => task.status === filter.status);
-    }
-
     const dto: PaginatedItems<TaskDto> = {
       data: tasks.data.map(TasksMapper.entityToDTO),
       pagination: tasks.pagination,

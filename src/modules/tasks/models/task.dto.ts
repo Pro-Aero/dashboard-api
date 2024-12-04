@@ -45,8 +45,9 @@ export class TaskFilter {
   notComplete: boolean;
 
   @IsOptional()
-  @IsEnum(TaskStatus)
-  status: TaskStatus;
+  @Transform(({ value }) => value?.split(','))
+  @IsEnum(TaskStatus, { each: true })
+  status: TaskStatus[];
 
   @IsOptional()
   @IsBoolean()
@@ -74,8 +75,9 @@ export class PaginationQueryWithTaskFilter extends PaginationQuery {
   notComplete: boolean;
 
   @IsOptional()
-  @IsEnum(TaskStatus)
-  status: TaskStatus;
+  @Transform(({ value }) => value?.split(','))
+  @IsEnum(TaskStatus, { each: true })
+  status: TaskStatus[];
 
   @IsOptional()
   @IsBoolean()
