@@ -37,9 +37,4 @@ export type UserTasksStatusDto = {
       urgent: number;
     };
   };
-  weeklyAvailability: {
-    totalAvailableHours: number;
-    hoursOccupied: number;
-    hoursRemaining: number;
-  };
 };

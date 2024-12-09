@@ -59,6 +59,8 @@ export class TaskRepository {
       assignments: { some: { user: { id: userId, show: true } } },
     };
 
+    console.log(where);
+
     const [tasks, totalItems] = await Promise.all([
       prisma.task.findMany({
         where,
@@ -183,19 +185,24 @@ export class TaskRepository {
     if (task) await prisma.task.delete({ where: { id: taskId } });
   }
 
-  async countTasksByPriority(userId: string): Promise<number[]> {
-    const filter: Prisma.TaskWhereInput = {
-      assignments: { some: { userId } },
-      NOT: { percentComplete: 100 },
+  async countTasksByPriority(
+    userId: string,
+    filter?: TaskFilter,
+  ): Promise<number[]> {
+    const where: Prisma.TaskWhereInput = {
+      ...(await this.buildTaskFilterCriteria(filter)),
+      assignments: { some: { user: { id: userId, show: true } } },
     };
+
+    console.log(where);
 
     const [totalTasks, countLow, countMedium, countImportant, countUrgent] =
       await Promise.all([
-        prisma.task.count({ where: filter }),
-        prisma.task.count({ where: { ...filter, priority: 9 } }),
-        prisma.task.count({ where: { ...filter, priority: 5 } }),
-        prisma.task.count({ where: { ...filter, priority: 3 } }),
-        prisma.task.count({ where: { ...filter, priority: 1 } }),
+        prisma.task.count({ where }),
+        prisma.task.count({ where: { ...where, priority: 9 } }),
+        prisma.task.count({ where: { ...where, priority: 5 } }),
+        prisma.task.count({ where: { ...where, priority: 3 } }),
+        prisma.task.count({ where: { ...where, priority: 1 } }),
       ]);
 
     return [totalTasks, countLow, countMedium, countImportant, countUrgent];

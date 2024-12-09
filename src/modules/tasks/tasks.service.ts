@@ -116,8 +116,11 @@ export class TasksService {
     );
   }
 
-  async countTasksByPriority(userId: string): Promise<number[]> {
-    return await this.repository.countTasksByPriority(userId);
+  async countTasksByPriority(
+    userId: string,
+    filter?: TaskFilter,
+  ): Promise<number[]> {
+    return await this.repository.countTasksByPriority(userId, filter);
   }
 
   extractHoursFromTitle(title: string): number {

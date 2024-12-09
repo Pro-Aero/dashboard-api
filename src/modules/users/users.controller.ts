@@ -48,7 +48,10 @@ export class UsersController {
 
   @Get(':userId/tasks/status')
   @HttpCode(HttpStatus.OK)
-  async getUserTasksStatus(@Param('userId') userId: string) {
-    return await this.usersService.getUserTasksStatus(userId);
+  async getUserTasksStatus(
+    @Param('userId') userId: string,
+    @Query() query: PaginationQueryWithTaskFilter,
+  ) {
+    return await this.usersService.getUserTasksStatus(userId, query);
   }
 }
