@@ -59,8 +59,6 @@ export class TaskRepository {
       assignments: { some: { user: { id: userId, show: true } } },
     };
 
-    console.log(where);
-
     const [tasks, totalItems] = await Promise.all([
       prisma.task.findMany({
         where,
@@ -143,9 +141,6 @@ export class TaskRepository {
       NOT: { dueDateTime: null, percentComplete: 100 },
     };
 
-    console.log(where);
-    console.log(where.OR);
-
     const [tasks, totalItems] = await Promise.all([
       prisma.task.findMany({
         where,
@@ -193,8 +188,6 @@ export class TaskRepository {
       ...(await this.buildTaskFilterCriteria(filter)),
       assignments: { some: { user: { id: userId, show: true } } },
     };
-
-    console.log(where);
 
     const [totalTasks, countLow, countMedium, countImportant, countUrgent] =
       await Promise.all([

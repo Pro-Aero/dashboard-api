@@ -70,8 +70,6 @@ export class GraphsService {
       };
     }
 
-    console.log(days);
-
     return {
       userId: user.id,
       userName: user.displayName,

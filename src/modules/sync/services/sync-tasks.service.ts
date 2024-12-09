@@ -92,8 +92,6 @@ export class SyncTasksService {
       .api('/planner/tasks')
       .post(taskData);
 
-    console.log(response);
-
     const task: TaskEntity = {
       id: response.id,
       title: response.title,
