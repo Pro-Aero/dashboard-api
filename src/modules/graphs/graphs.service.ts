@@ -70,11 +70,13 @@ export class GraphsService {
       };
     }
 
+    console.log(days);
+
     return {
       userId: user.id,
       userName: user.displayName,
-      workedHours: days[saturday].totalHours,
-      availableHours: days[sunday].totalHours,
+      availableHours: days[saturday].totalHours,
+      workedHours: days[sunday].totalHours,
       maxWorkedHours: MAX_WORKED_HOURS_PER_WEEK,
     };
   }
