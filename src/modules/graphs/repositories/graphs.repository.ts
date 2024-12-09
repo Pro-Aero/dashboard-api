@@ -22,7 +22,7 @@ export class GraphsRepository {
         assignments: { some: { user: { id: userId, show: true } } },
         startDateTime: { gte: startDate },
         dueDateTime: { lte: endDate },
-        NOT: { AND: [{ hours: null }, { dueDateTime: null }] },
+        NOT: { hours: null },
       },
       include: { planner: true, assignments: { include: { user: true } } },
       orderBy: { priority: 'asc' },

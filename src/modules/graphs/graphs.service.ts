@@ -48,7 +48,7 @@ export class GraphsService {
     const now = DateTime.local();
 
     const filter: DateRangeFilter = {
-      startDate: now.startOf('week').plus({ days: 1 }).toJSDate(),
+      startDate: now.startOf('week').toJSDate(),
       endDate: now.endOf('week').toJSDate(),
     };
 
@@ -59,6 +59,16 @@ export class GraphsService {
       .minus({ days: 1 })
       .toFormat('yyyy-MM-dd');
     const sunday = now.endOf('week').toFormat('yyyy-MM-dd');
+
+    if (Object.keys(days).length === 0) {
+      return {
+        userId: user.id,
+        userName: user.displayName,
+        workedHours: 0,
+        availableHours: MAX_WORKED_HOURS_PER_WEEK,
+        maxWorkedHours: MAX_WORKED_HOURS_PER_WEEK,
+      };
+    }
 
     return {
       userId: user.id,
