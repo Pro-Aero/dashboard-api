@@ -123,6 +123,13 @@ export class TasksService {
     return await this.repository.countTasksByPriority(userId, filter);
   }
 
+  async countTasksByStatus(
+    userId: string,
+    filter?: TaskFilter,
+  ): Promise<number[]> {
+    return await this.repository.countTasksByStatus(userId, filter);
+  }
+
   extractHoursFromTitle(title: string): number {
     const match = title.match(/\{\s*(\d+)\s*\}/);
     return match ? parseInt(match[1], 10) : null;

@@ -58,14 +58,27 @@ export class UsersService {
     if (!user) throw new NotFoundException();
     user.busyHours = await this.repository.calculateBusyHours(user.id);
 
-    const [total, low, medium, important, urgent] =
+    const [totalTasks, low, medium, important, urgent] =
       await this.tasksService.countTasksByPriority(userId, filter);
+
+    const [total, notStarted, inProgress, completed, nextOverdue, overdue] =
+      await this.tasksService.countTasksByStatus(userId, filter);
 
     const tasksStatus: UserTasksStatusDto = {
       userId: user.id,
       tasksSummary: {
-        totalTasks: total,
+        totalTasks: totalTasks,
         taskCountsByPriority: { low, medium, important, urgent },
+      },
+      statusSummary: {
+        totalTasks: total,
+        taskCountsByStatus: {
+          notStarted,
+          inProgress,
+          completed,
+          nextOverdue,
+          overdue,
+        },
       },
     };
 

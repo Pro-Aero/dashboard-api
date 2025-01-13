@@ -201,6 +201,55 @@ export class TaskRepository {
     return [totalTasks, countLow, countMedium, countImportant, countUrgent];
   }
 
+  async countTasksByStatus(
+    userId: string,
+    filter?: TaskFilter,
+  ): Promise<number[]> {
+    const where: Prisma.TaskWhereInput = {
+      ...(await this.buildTaskFilterCriteria(filter)),
+      assignments: { some: { user: { id: userId, show: true } } },
+    };
+
+    const tasks = await prisma.task.findMany({
+      where,
+      select: {
+        startDateTime: true,
+        dueDateTime: true,
+        completedDateTime: true,
+      },
+    });
+
+    const counts: number[] = [tasks.length, 0, 0, 0, 0, 0];
+
+    for (const task of tasks) {
+      const status = TasksMapper.toStatus(
+        task.startDateTime,
+        task.dueDateTime,
+        task.completedDateTime,
+      );
+
+      switch (status) {
+        case TaskStatus.NotStarted:
+          counts[1] += 1;
+          break;
+        case TaskStatus.InProgress:
+          counts[2] += 1;
+          break;
+        case TaskStatus.Completed:
+          counts[3] += 1;
+          break;
+        case TaskStatus.NextOverdue:
+          counts[4] += 1;
+          break;
+        case TaskStatus.Overdue:
+          counts[5] += 1;
+          break;
+      }
+    }
+
+    return counts;
+  }
+
   async buildTaskFilterCriteria(
     filter?: TaskFilter,
   ): Promise<Prisma.TaskWhereInput> {
@@ -253,11 +302,16 @@ export class TaskRepository {
       });
     }
 
+    const startDate = filter.startDate ? filter.startDate : undefined;
+    const endDate = filter.endDate ? filter.endDate : undefined;
+
     const where: Prisma.TaskWhereInput = {
       title: filter?.title
         ? { contains: filter.title, mode: 'insensitive' }
         : undefined,
       priority: filter?.priority ?? undefined,
+      startDateTime: { gte: startDate },
+      dueDateTime: { lte: endDate },
       ...(percentComplete !== undefined && { percentComplete }),
       ...(statusFilters.length > 0 ? { OR: statusFilters } : {}),
     };

@@ -37,4 +37,14 @@ export type UserTasksStatusDto = {
       urgent: number;
     };
   };
+  statusSummary: {
+    totalTasks: number;
+    taskCountsByStatus: {
+      notStarted: number;
+      inProgress: number;
+      completed: number;
+      nextOverdue: number;
+      overdue: number;
+    };
+  };
 };

@@ -1,10 +1,13 @@
 import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsDate,
   IsEnum,
   IsNumber,
   IsOptional,
   IsString,
+  MinDate,
+  ValidateIf,
 } from 'class-validator';
 import { PaginationQuery } from 'src/types/pagination-query';
 import { PlannerInTask, TaskStatus, UserAssignment } from './task.entity';
@@ -52,6 +55,20 @@ export class TaskFilter {
   @IsOptional()
   @IsBoolean()
   isOverdue: boolean;
+
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate({ message: 'startDate must be a valid date' })
+  startDate: Date;
+
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate({ message: 'endDate must be a valid date' })
+  @ValidateIf((obj) => obj.startDate)
+  @MinDate(new Date(), {
+    message: 'endDate cannot be earlier than the current date',
+  })
+  endDate: Date;
 }
 
 export class PaginationQueryWithTaskFilter extends PaginationQuery {
@@ -82,4 +99,18 @@ export class PaginationQueryWithTaskFilter extends PaginationQuery {
   @IsOptional()
   @IsBoolean()
   isOverdue: boolean;
+
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate({ message: 'startDate must be a valid date' })
+  startDate: Date;
+
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate({ message: 'endDate must be a valid date' })
+  @ValidateIf((obj) => obj.startDate)
+  @MinDate(new Date(), {
+    message: 'endDate cannot be earlier than the current date',
+  })
+  endDate: Date;
 }
