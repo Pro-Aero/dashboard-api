@@ -219,7 +219,7 @@ export class TaskRepository {
       },
     });
 
-    const counts: number[] = [tasks.length, 0, 0, 0, 0, 0];
+    const counts: number[] = [0, 0, 0, 0, 0];
 
     for (const task of tasks) {
       const status = TasksMapper.toStatus(
@@ -230,19 +230,19 @@ export class TaskRepository {
 
       switch (status) {
         case TaskStatus.NotStarted:
-          counts[1] += 1;
+          counts[0] += 1;
           break;
         case TaskStatus.InProgress:
-          counts[2] += 1;
+          counts[1] += 1;
           break;
         case TaskStatus.Completed:
-          counts[3] += 1;
+          counts[2] += 1;
           break;
         case TaskStatus.NextOverdue:
-          counts[4] += 1;
+          counts[3] += 1;
           break;
         case TaskStatus.Overdue:
-          counts[5] += 1;
+          counts[4] += 1;
           break;
       }
     }
