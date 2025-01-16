@@ -133,7 +133,7 @@ export class TasksMapper {
     dueDateTime?: Date,
     completedDateTime?: Date,
   ): TaskStatus {
-    const now = DateTime.now();
+    const now = DateTime.now().endOf('day');
 
     if (completedDateTime) {
       return TaskStatus.Completed;

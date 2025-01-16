@@ -24,7 +24,14 @@ export class GraphsRepository {
         dueDateTime: { lte: endDate },
         NOT: { hours: null },
       },
-      include: { planner: true, assignments: { include: { user: true } } },
+      include: {
+        planner: true,
+        assignments: {
+          include: { user: true },
+          take: 1,
+          orderBy: { order: 'asc' },
+        },
+      },
       orderBy: { priority: 'asc' },
     });
 

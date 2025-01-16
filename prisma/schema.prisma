@@ -73,6 +73,7 @@ model Assignment {
   id     String @id
   taskId String @map("task_id")
   userId String @map("user_id")
+  order  Int    @default(autoincrement())
 
   task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

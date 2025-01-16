@@ -64,6 +64,9 @@ export class TaskRepository {
         where,
         take: itemsPerPage,
         skip: (page - 1) * itemsPerPage,
+        orderBy: {
+          dueDateTime: 'asc',
+        },
         include: {
           planner: true,
           assignments: {
@@ -253,11 +256,13 @@ export class TaskRepository {
   async buildTaskFilterCriteria(
     filter?: TaskFilter,
   ): Promise<Prisma.TaskWhereInput> {
-    let percentComplete;
+    let percentComplete = {};
 
     if (filter?.notComplete) {
       percentComplete = { not: 100 };
-    } else if (filter?.percentComplete) {
+    }
+
+    if (filter?.percentComplete !== undefined) {
       percentComplete = filter.percentComplete;
     }
 
