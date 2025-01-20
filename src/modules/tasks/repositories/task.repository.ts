@@ -79,6 +79,16 @@ export class TaskRepository {
       prisma.task.count({ where }),
     ]);
 
+    const now = new Date();
+    tasks.sort((a, b) => {
+      const aIsFuture = a.startDateTime > now;
+      const bIsFuture = b.startDateTime > now;
+
+      if (aIsFuture && !bIsFuture) return 1;
+      if (!aIsFuture && bIsFuture) return -1;
+      return 0;
+    });
+
     return {
       data: tasks.map((task) => TasksMapper.modelToEntity(task)),
       pagination: makePagination(page, itemsPerPage, totalItems),
