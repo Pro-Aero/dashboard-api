@@ -17,7 +17,7 @@ export class GraphsRepository {
 
     const endDate = filter.endDate ? filter.endDate : undefined;
 
-    const tasks = await prisma.task.findMany({
+    let tasks = await prisma.task.findMany({
       where: {
         assignments: { some: { user: { id: userId, show: true } } },
         startDateTime: { gte: startDate },
@@ -28,12 +28,14 @@ export class GraphsRepository {
         planner: true,
         assignments: {
           include: { user: true },
-          take: 1,
           orderBy: { order: 'asc' },
+          take: 1,
         },
       },
       orderBy: { priority: 'asc' },
     });
+
+    tasks = tasks.filter((t) => t.assignments.some((a) => a.userId === userId));
 
     return tasks.map(TasksMapper.modelToEntity);
   }
