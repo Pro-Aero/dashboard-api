@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { TaskTemplateMapper } from './mappers/task-template.mapper';
 import { TemplateMapper } from './mappers/templates.mapper';
@@ -14,6 +14,7 @@ import { TemplateRepository } from './repositories/template.repository';
 @Injectable()
 export class TemplatesService {
   constructor(private readonly templateRepository: TemplateRepository) {}
+  private readonly logger = new Logger(TemplatesService.name);
 
   async create(dto: CreateTemplateDTO): Promise<TemplateDTO> {
     const templateId = crypto.randomUUID();
@@ -40,6 +41,11 @@ export class TemplatesService {
     plannerId: string,
     dto: ExecuteTemplateDTO,
   ): Promise<void> {
+    this.logger.log({
+      templateId,
+      assignments: dto,
+    });
+
     const template = await this.templateRepository.findById(templateId);
 
     if (!template) {

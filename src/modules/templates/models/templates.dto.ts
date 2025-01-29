@@ -49,9 +49,7 @@ export class UpdateTemplateDTO {
 }
 
 export class ExecuteTemplateDTO {
-  @IsNotEmpty()
   @IsObject()
-  @IsNotEmptyObject()
   assignments: Record<string, string>;
 }
 

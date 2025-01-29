@@ -80,12 +80,14 @@ export class SyncTasksService {
       planId: plannerId,
       title,
       priority,
-      assignments: {
-        [assignmentUserId]: {
-          '@odata.type': '#microsoft.graph.plannerAssignment',
-          orderHint: ' !',
+      ...(assignmentUserId && {
+        assignments: {
+          [assignmentUserId]: {
+            '@odata.type': '#microsoft.graph.plannerAssignment',
+            orderHint: ' !',
+          },
         },
-      },
+      }),
     };
 
     const response: TaskApiResponse = await this.client
@@ -99,15 +101,16 @@ export class SyncTasksService {
       priority: response.priority,
       hours: hours,
       planner: { id: response.planId },
-      assignments: [{ id: assignmentUserId }],
-    };
-
-    const assignment: CreateAssignmentDto = {
-      taskId: task.id,
-      userId: assignmentUserId,
+      assignments: assignmentUserId ? [{ id: assignmentUserId }] : [],
     };
 
     await this.tasksService.upsert(task);
-    await this.assignmentsService.upsert(assignment);
+    if (assignmentUserId) {
+      const assignment: CreateAssignmentDto = {
+        taskId: task.id,
+        userId: assignmentUserId,
+      };
+      await this.assignmentsService.upsert(assignment);
+    }
   }
 }
