@@ -1,7 +1,7 @@
 import { Prisma, Task } from '@prisma/client';
+import { DateTime } from 'luxon';
 import { TaskDto } from '../models/task.dto';
 import { TaskApiResponse, TaskEntity, TaskStatus } from '../models/task.entity';
-import { DateTime } from 'luxon';
 export class TasksMapper {
   static modelToEntity(
     raw: Prisma.TaskGetPayload<{

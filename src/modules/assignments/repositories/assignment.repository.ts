@@ -1,7 +1,7 @@
+import { Injectable } from '@nestjs/common';
 import { prisma } from 'src/config/prisma-client';
 import { AssignmentsMapper } from '../mappers/assignment.mapper';
 import { AssignmentEntity } from '../models/assignment.entity';
-import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AssignmentRepository {
@@ -28,10 +28,10 @@ export class AssignmentRepository {
       await prisma.assignment.delete({ where: { id: assignmentId } });
   }
 
-  async exists(taskId: string, userId: string): Promise<boolean> {
+  async find(taskId: string, userId: string): Promise<AssignmentEntity> {
     const assignment = await prisma.assignment.findFirst({
       where: { taskId, userId },
     });
-    return !!assignment;
+    return assignment;
   }
 }

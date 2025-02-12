@@ -12,13 +12,10 @@ export class AssignmentsService {
     private readonly usersService: UsersService,
   ) {}
 
-  async upsert(dto: CreateAssignmentDto): Promise<void> {
+  async upsert(dto: CreateAssignmentDto): Promise<AssignmentEntity | null> {
     const userExists = await this.usersService.exists(dto.userId);
-    const assignmentExists = await this.repository.exists(
-      dto.taskId,
-      dto.userId,
-    );
-    if (!userExists || assignmentExists) return;
+    const assignment = await this.repository.find(dto.taskId, dto.userId);
+    if (!userExists || assignment) return assignment;
 
     const entity: AssignmentEntity = {
       id: crypto.randomUUID(),
@@ -27,5 +24,24 @@ export class AssignmentsService {
     };
 
     await this.repository.upsert(entity);
+    return entity;
+  }
+
+  async removeOutdated(apiAssignments: AssignmentEntity[]): Promise<void> {
+    const dbAssignment = await this.repository.getAll();
+
+    const apiAssignmentsMap = new Map(
+      apiAssignments.map((item) => [item.id, item]),
+    );
+
+    const assignmentsToRemove = dbAssignment.filter(
+      (item) => !apiAssignmentsMap.has(item.id),
+    );
+
+    await Promise.all(
+      assignmentsToRemove.map(
+        async (item) => await this.repository.remove(item.id),
+      ),
+    );
   }
 }

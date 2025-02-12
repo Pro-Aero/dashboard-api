@@ -2,6 +2,7 @@ import { Client } from '@microsoft/microsoft-graph-client';
 import { Injectable } from '@nestjs/common';
 import { AssignmentsService } from 'src/modules/assignments/assignments.service';
 import { CreateAssignmentDto } from 'src/modules/assignments/models/assignment.dto';
+import { AssignmentEntity } from 'src/modules/assignments/models/assignment.entity';
 import { PlannersService } from 'src/modules/planners/planners.service';
 import { TasksMapper } from 'src/modules/tasks/mappers/task.mapper';
 import {
@@ -38,23 +39,28 @@ export class SyncTasksService {
     const allTasks: TaskEntity[] = [];
     tasksArray.forEach((tasks) => allTasks.push(...tasks));
 
+    const allAssignments: AssignmentEntity[] = [];
+
     await Promise.all(
       allTasks.map(async (task) => {
         task.hours = this.tasksService.extractHoursFromTitle(task.title);
         await this.tasksService.upsert(task);
 
-        Promise.all(
-          task.assignments.map((user) =>
-            this.assignmentsService.upsert({
+        const assignments = await Promise.all(
+          task.assignments.map(async (user) => {
+            return await this.assignmentsService.upsert({
               taskId: task.id,
               userId: user.id,
-            }),
-          ),
+            });
+          }),
         );
+
+        allAssignments.push(...assignments.filter(Boolean));
       }),
     );
 
     await this.tasksService.removeOutdated(allTasks);
+    await this.assignmentsService.removeOutdated(allAssignments);
 
     await Promise.all(
       planners.map(
