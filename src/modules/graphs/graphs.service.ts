@@ -16,6 +16,7 @@ import {
   TasksPerDay,
 } from './models/graphs.entity';
 import { GraphsRepository } from './repositories/graphs.repository';
+import { removeDuplicatesByKey } from 'src/helpers/remove-duplicates';
 
 @Injectable()
 export class GraphsService {
@@ -73,7 +74,7 @@ export class GraphsService {
       if (day.isWeekend) {
         let tempDate = currentDate;
         let sum = 0;
-        const weekTasks: TaskDay[] = [];
+        let weekTasks: TaskDay[] = [];
         for (let i = 0; i < 5; i++) {
           tempDate = tempDate.minus({ days: 1 });
           const dateStr = tempDate.toFormat('yyyy-MM-dd');
@@ -83,6 +84,8 @@ export class GraphsService {
             weekTasks.push(...day.tasks);
           }
         }
+
+        weekTasks = removeDuplicatesByKey(weekTasks, 'taskId');
 
         const dateStr2 = currentDate.plus({ days: 1 }).toFormat('yyyy-MM-dd');
         const tomorrow = calendar.get(dateStr2);
