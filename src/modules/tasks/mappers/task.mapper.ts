@@ -139,27 +139,23 @@ export class TasksMapper {
       return TaskStatus.Completed;
     }
 
-    if (startDateTime && now <= DateTime.fromJSDate(startDateTime)) {
-      return TaskStatus.NotStarted;
-    }
-
     if (dueDateTime) {
       const dueDate = DateTime.fromJSDate(dueDateTime);
-      const daysToDue = dueDate.diff(now, 'days').days;
-
-      if (daysToDue <= 7 && daysToDue > 0) {
-        return TaskStatus.NextOverdue;
-      }
-
-      if (now <= dueDate) {
-        return TaskStatus.InProgress;
-      }
 
       if (now > dueDate) {
         return TaskStatus.Overdue;
       }
+
+      const daysToDue = dueDate.diff(now, 'days').days;
+      if (daysToDue <= 7 && daysToDue > 0) {
+        return TaskStatus.NextOverdue;
+      }
     }
 
-    return null;
+    if (startDateTime && now <= DateTime.fromJSDate(startDateTime)) {
+      return TaskStatus.NotStarted;
+    }
+
+    return TaskStatus.InProgress;
   }
 }
