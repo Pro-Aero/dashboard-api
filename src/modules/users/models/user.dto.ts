@@ -14,16 +14,16 @@ export type UserDto = {
 export class UserFilter {
   @IsOptional()
   @IsString()
-  displayName: string;
+  displayName?: string;
 
   @IsOptional()
   @IsString()
-  mail: string;
+  mail?: string;
 
   @IsOptional()
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
-  show: boolean;
+  show?: boolean;
 }
 
 export type UserTasksStatusDto = {

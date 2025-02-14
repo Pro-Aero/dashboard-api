@@ -6,9 +6,14 @@ import { DateRangeFilter, UserWeekAvailableDto } from './models/graphs.dto';
 export class GraphsController {
   constructor(private readonly graphsService: GraphsService) {}
 
-  @Get('team/availability')
+  @Get('team/availability-old')
   async calculateAllWorkedHours(@Query() filter: DateRangeFilter) {
     return await this.graphsService.calculateTeamWorkedHours(filter);
+  }
+
+  @Get('team/availability')
+  async teamWorkedGraph(@Query() filter: DateRangeFilter) {
+    return await this.graphsService.calculateTeamWorkedGraph(filter);
   }
 
   @Get('users/:userId/availability/week')

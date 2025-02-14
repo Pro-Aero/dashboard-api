@@ -1,11 +1,3 @@
-// export type GraphWeek = {
-//   start: Date;
-//   end: Date;
-//   availableHours: number;
-//   workedHours: number;
-//   distributionOfHours: number[];
-// };
-
 import { TaskStatus } from 'src/modules/tasks/models/task.entity';
 
 export type TasksPerDay = {

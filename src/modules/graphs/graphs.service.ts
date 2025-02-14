@@ -24,6 +24,156 @@ export class GraphsService {
     private readonly usersService: UsersService,
   ) {}
 
+  async calculateTeamWorkedGraph(
+    filter: DateRangeFilter,
+  ): Promise<TeamWorkedHoursDto[]> {
+    const users = await this.usersService.findAll({ show: true });
+
+    const result: TeamWorkedHoursDto[] = [];
+
+    for (const user of users) {
+      const days = await this.calculateUserWorkedGraph(user.id, filter);
+      result.push({
+        userId: user.id,
+        userName: user.displayName,
+        tasksPerDays: days,
+      });
+    }
+
+    return result;
+  }
+
+  async calculateUserWorkedGraph(
+    userId: string,
+    filter: DateRangeFilter,
+  ): Promise<TasksPerDayDto> {
+    const tasks = await this.repository.findAllUserTasks(userId, filter);
+    const calendar = new Map<string, TasksPerDay>();
+
+    let currentDate = DateTime.fromJSDate(filter.startDate);
+    while (currentDate.toJSDate() <= filter.endDate) {
+      const dateStr = currentDate.toFormat('yyyy-MM-dd');
+      const dayOfWeek = currentDate.weekday;
+      calendar.set(dateStr, {
+        totalHours: 0,
+        tasks: [],
+        isWeekend: dayOfWeek >= 6,
+      });
+
+      currentDate = currentDate.plus({ days: 1 });
+    }
+
+    const queue: TaskEntity[] = [];
+
+    currentDate = DateTime.fromJSDate(filter.startDate);
+    while (currentDate.toJSDate() <= filter.endDate) {
+      const dateStr = currentDate.toFormat('yyyy-MM-dd');
+      const day = calendar.get(dateStr);
+
+      if (day.isWeekend) {
+        let tempDate = currentDate;
+        let sum = 0;
+        const weekTasks: TaskDay[] = [];
+        for (let i = 0; i < 5; i++) {
+          tempDate = tempDate.minus({ days: 1 });
+          const dateStr = tempDate.toFormat('yyyy-MM-dd');
+          const day = calendar.get(dateStr);
+          if (day) {
+            sum += day.totalHours;
+            weekTasks.push(...day.tasks);
+          }
+        }
+
+        const dateStr2 = currentDate.plus({ days: 1 }).toFormat('yyyy-MM-dd');
+        const tomorrow = calendar.get(dateStr2);
+
+        day.totalHours = MAX_WORKED_HOURS_PER_WEEK - sum;
+        day.tasks = weekTasks;
+        tomorrow.totalHours = sum;
+        tomorrow.tasks = weekTasks;
+
+        calendar.set(dateStr, day);
+        calendar.set(dateStr2, tomorrow);
+
+        currentDate = currentDate.plus({ days: 2 });
+        continue;
+      }
+
+      let task = this.removeTaskByDate(tasks, queue, currentDate.toJSDate());
+      if (!task) {
+        currentDate = currentDate.plus({ days: 1 });
+        continue;
+      }
+
+      if (task.hours < MAX_WORKED_HOURS_PER_DAY) {
+        day.totalHours += task.hours;
+        day.tasks.push(this.toTaskDay(task));
+        do {
+          task = this.removeTaskByDate(tasks, queue, currentDate.toJSDate());
+          if (!task) break;
+          if (day.totalHours + task.hours < MAX_WORKED_HOURS_PER_DAY) {
+            day.totalHours += task.hours;
+            day.tasks.push(this.toTaskDay(task));
+          } else if (day.totalHours + task.hours === MAX_WORKED_HOURS_PER_DAY) {
+            day.totalHours = MAX_WORKED_HOURS_PER_DAY;
+            day.tasks.push(this.toTaskDay(task));
+          } else {
+            const hourDiff = MAX_WORKED_HOURS_PER_DAY - day.totalHours;
+            day.tasks.push(this.toTaskDay({ ...task, hours: hourDiff }));
+            task.hours -= hourDiff;
+            queue.push(task);
+            day.totalHours = MAX_WORKED_HOURS_PER_DAY;
+          }
+        } while (day.totalHours !== MAX_WORKED_HOURS_PER_DAY);
+      } else if (task.hours === MAX_WORKED_HOURS_PER_DAY) {
+        day.totalHours = MAX_WORKED_HOURS_PER_DAY;
+        day.tasks.push(this.toTaskDay(task));
+      } else {
+        const hourDiff = MAX_WORKED_HOURS_PER_DAY;
+        day.tasks.push(this.toTaskDay({ ...task, hours: hourDiff }));
+        day.totalHours = hourDiff;
+        task.hours = task.hours - hourDiff;
+        queue.push(task);
+      }
+
+      calendar.set(dateStr, day);
+      currentDate = currentDate.plus({ days: 1 });
+    }
+
+    return Object.fromEntries(calendar);
+  }
+
+  toTaskDay(task: TaskEntity): TaskDay {
+    return {
+      taskId: task.id,
+      title: task.title,
+      hours: task.hours,
+      status: task.status,
+    };
+  }
+
+  removeTaskByDate(
+    tasks: TaskEntity[],
+    queue: TaskEntity[],
+    targetDate: Date,
+  ): TaskEntity | null {
+    if (queue.length > 0) return queue.shift();
+
+    const index = tasks.findIndex((t) => {
+      const taskStartDate = DateTime.fromJSDate(t.startDateTime).startOf('day');
+      const targetEndOfDay = DateTime.fromJSDate(targetDate).endOf('day');
+      return taskStartDate <= targetEndOfDay;
+    });
+
+    if (index !== -1) {
+      const task = tasks[index];
+      tasks.splice(index, 1);
+      return task;
+    } else {
+      return null;
+    }
+  }
+
   async calculateTeamWorkedHours(
     filter: DateRangeFilter,
   ): Promise<TeamWorkedHoursDto[]> {
@@ -83,7 +233,7 @@ export class GraphsService {
     userId: string,
     filter: DateRangeFilter,
   ): Promise<TasksPerDayDto> {
-    const tasks = await this.repository.findAllTasks(userId, filter);
+    const tasks = await this.repository.findAllUserTasks(userId, filter);
     const tasksPerDay = await this.calculateTasksPerDay(tasks);
     const mergedTasksPerDay = await this.mergeTasksPerDay(tasksPerDay);
 
@@ -91,7 +241,7 @@ export class GraphsService {
   }
 
   async calculateTasksAndWorkedHours(userId: string, filter: DateRangeFilter) {
-    const tasks = await this.repository.findAllTasks(userId, filter);
+    const tasks = await this.repository.findAllUserTasks(userId, filter);
     const tasksPerDay = await this.calculateTasksPerDay(tasks);
     const mergedTasksPerDay = await this.mergeTasksPerDay(tasksPerDay);
     const groupMergedTasks = this.groupMergedTasksPerDay(mergedTasksPerDay);

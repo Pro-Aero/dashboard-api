@@ -17,6 +17,7 @@ export class UserRepository {
           : undefined,
         show: filter?.show,
       },
+      orderBy: { displayName: 'asc' },
     });
 
     return users.map(UsersMapper.modelToEntity);
